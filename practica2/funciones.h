@@ -44,7 +44,7 @@ struct jugador
     int socket;
     int estado;
     char nombre_user[50];
-    char nombre[50];
+    //char nombre[50];
     //y más cosas
     //a lo mejor un vector de partidos
     //a lo mejor un contador para los disparos
@@ -71,7 +71,7 @@ bool existeUsuario(char *usuario);
 bool passwordCorrecta(char * usuario, char * password);
 
 //Funcion que comprueba si se repite un usuario
-bool comprobar_usuario(struct jugador * jugadores, int tam, int socket, char * nombre);
+bool comprobar_usuario(struct jugador * jugadores, int tam,int socket, char * nombre);
 
 //bool registrarUsuario(char * usuario, char * password);
 
@@ -96,11 +96,11 @@ void actualizarEstado_partida(struct partida * partidas, struct jugador * jugado
 //
 void inicializar_vector_jugadores(struct jugador * jugadores, int tam);
 
-void guardarNuevoJugador(struct jugador * jugadores,int tam, int socket);
+void guardarNuevoJugador(struct jugador * jugadores,int tam, int socket,int pos);
 
 int buscarSocket(struct jugador * jugadores,int tam, int socket);
 
-int buscarSocketDisponible(struct jugador * jugadores, int tam);
+int buscarSocketDisponible(struct jugador * jugadores, int tam, int s);
 
 //Hacer una funcion de buscar usuario
 

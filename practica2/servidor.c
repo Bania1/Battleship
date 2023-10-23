@@ -147,7 +147,10 @@ int main()
                                 }
 
                                 // Aquí viene mi código (ojo, aquí socket es new_sd)
-                                guardarNuevoJugador(jugadores, MAX_CLIENTS, new_sd);
+                                
+                                guardarNuevoJugador(jugadores, MAX_CLIENTS, new_sd,numClientes);
+                                
+                    
                             }
                             else
                             {
@@ -225,9 +228,9 @@ int main()
                                         if(encontrado)
                                         {
                                             //Partida SEMILLENA encontrada
-                                            int waiting_player_socket = buscarSocketDisponible(jugadores, MAX_CLIENTS);
+                                            int waiting_player_socket = buscarSocketDisponible(jugadores, MAX_CLIENTS,i);
                                             printf("Partida SEMILLENA encontrada\n");
-                                            printf("El jugador %d ha encontrado partida con el jugador %d\n", partidas[i].socket2, waiting_player_socket);
+                                            printf("El jugador %d ha encontrado partida con el jugador %d\n", i, waiting_player_socket);
 
                                             //Le envío al jugador que ha encontrado partida
                                             bzero(buffer,sizeof(buffer));
@@ -245,11 +248,14 @@ int main()
 
                                             //Actualizo el estado de los jugadores
                                             //buscar la pos de una partida por socket de un jugador
-                                            int pos1 = buscarSocket(jugadores, MAX_CLIENTS, i);
-                                            int pos2 = buscarSocket(jugadores, MAX_CLIENTS, partidas[i].socket2);
+                                            // int pos1 = buscarSocket(jugadores, MAX_CLIENTS, i);
+                                            // int pos2 = buscarSocket(jugadores, MAX_CLIENTS, partidas[i].socket2);
 
-                                            jugadores[pos1].estado = JUGANDO;
-                                            jugadores[pos2].estado = JUGANDO;
+                                            // printf("pos: %d\n", pos1);
+                                            // printf("pos: %d\n", pos2);
+
+                                            // jugadores[pos1].estado = JUGANDO;
+                                            // jugadores[pos2].estado = JUGANDO;
                                         }
                                         else
                                         {
@@ -264,10 +270,12 @@ int main()
 
                                             //Actualizo el estado de los jugadores
                                             //buscar la pos de una partida por socket de un jugador
+                                            printf("i: %d\n", i);
+
                                             int pos1_1 = buscarSocket(jugadores, MAX_CLIENTS, i);
                                             
-                                            jugadores[i].estado = ESPERANDO;
-                                            printf("pos: %d\n", pos1_1);
+                                            jugadores[pos1_1].estado = ESPERANDO;
+                                            // printf("pos: %d\n", pos1_1);
                                         }
                                     }
                                 }
@@ -293,10 +301,11 @@ int main()
                                     sprintf(buffer, "-Err: El usuario ya se encuentra logueado\n");
                                     send(i, buffer, sizeof(buffer), 0);
                                 }
-                                if (existe && usuario_encontrado==false)
+                                else if (existe && usuario_encontrado==false)
                                 {
                                     // cambia el estado del jugador a USUARIO_ENCONTRADO
                                     jugadores[pos].estado = USUARIO_ENCONTRADO;
+                                    //jugadores[i].estado = USUARIO_ENCONTRADO;
 
                                     // Guardo el nombre del usuario en el vector de jugadores
                                     strcpy(jugadores[pos].nombre_user, nombre);
@@ -323,8 +332,7 @@ int main()
                                 int pos = buscarSocket(jugadores, MAX_CLIENTS, i);
 
                                 // Compruebo si el usuario ha introducido antes el nombre de usuario
-                                if (jugadores[pos].estado != USUARIO_ENCONTRADO)
-                                {
+                                if (jugadores[pos].estado != USUARIO_ENCONTRADO)                                {
                                     bzero(buffer, sizeof(buffer));
                                     sprintf(buffer, "-Err: Debes introducir el usuario antes de la contraseña\n");
                                     send(i, buffer, sizeof(buffer), 0);
@@ -332,12 +340,12 @@ int main()
                                 else
                                 {
                                     // Compruebo si la contraseña es correcta
-                                    bool correcta = passwordCorrecta(jugadores[pos].nombre_user, password);
+                                    bool correcta = passwordCorrecta(jugadores[pos].nombre_user, password);//pos por i
 
                                     if (correcta)
                                     {
                                         // cambia el estado del jugador a LOGUEADO
-                                        jugadores[pos].estado = LOGUEADO;
+                                        jugadores[pos].estado = LOGUEADO;//pos por i
                                         bzero(buffer, sizeof(buffer));
                                         sprintf(buffer, "+OK! Usuario logueado correctamente\n");
                                         send(i, buffer, sizeof(buffer), 0);

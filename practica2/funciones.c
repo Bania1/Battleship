@@ -64,18 +64,30 @@ bool passwordCorrecta(char * usuario, char * password)
 
 //Funcion que controla que no se repitan los usuarios
 //True si se repite
-bool comprobar_usuario(struct jugador * jugadores, int tam, int socket, char * nombre)
+bool comprobar_usuario(struct jugador * jugadores, int tam,int socket, char * nombre)
 {
+    int cont=0;
     for(int i=0; i<tam; i++)
     {
-        if(jugadores[i].estado == CONECTADO && jugadores[i].socket != socket)
+        if(jugadores[i].estado == LOGUEADO && (strcmp(jugadores[i].nombre_user,nombre) == 0))
         {
-            if(strcmp(jugadores[i].nombre, nombre) == 0)
-            {
-                return true;
-            }
+            //cont++;
+            return true;
+        }
+        //esta parte hay q implementar que cuando un jugador haga ^c lo ponga a no_conectado para q cuando vuelva a entrar le deje, eso o borrarlo del struct de jugadores
+        else if(jugadores[i].estado == NO_CONECTADO && (strcmp(jugadores[i].nombre_user,nombre) == 0))
+        {
+            return false;
         }
     }
+    /*if(cont>1)
+    {
+        return true;
+    }
+    else 
+    {
+        return false;
+    }*/
     return false;
 }
 
@@ -179,16 +191,18 @@ void inicializar_vector_jugadores(struct jugador * jugadores, int tam)
     }
 }
 
-void guardarNuevoJugador(struct jugador * jugadores,int tam, int socket)
+void guardarNuevoJugador(struct jugador * jugadores,int tam,int socket,int pos)
 {
-    for(int i=0; i<tam; i++)
+    /*for(int i=0; i<tam; i++)
     {
         if(jugadores[i].estado == NO_CONECTADO)
         {
             jugadores[i].socket = socket;
             jugadores[i].estado = CONECTADO;
         }
-    }
+    }*/
+    jugadores[pos-1].socket = socket;
+    jugadores[pos-1].estado = CONECTADO;   
 }
 
 int buscarSocket(struct jugador * jugadores,int tam, int socket)
@@ -203,11 +217,11 @@ int buscarSocket(struct jugador * jugadores,int tam, int socket)
     return -1;
 }
 
-int buscarSocketDisponible(struct jugador * jugadores, int tam)
+int buscarSocketDisponible(struct jugador * jugadores, int tam,int s)
 {
     for(int i=0; i<tam; i++)
     {
-        if(jugadores[i].estado == ESPERANDO)
+        if(jugadores[i].estado == ESPERANDO && jugadores[i].socket != s)
         {
             return jugadores[i].socket;
         }
