@@ -34,6 +34,7 @@ int main()
     int salida;
     int arrayClientes[MAX_CLIENTS];
     int numClientes = 0;
+    int numPartidas = 0;
     // contadores
     int i, j, k;
     int recibidos;
@@ -182,7 +183,7 @@ int main()
                             close(sd);
                             exit(-1);
                         }
-                        // Mensajes que se quieran mandar a los clientes (implementar)
+                        // Mensajes que se quieran mandar a los-1 clientes (implementar)
                     }
                     else // AQUÍ ENTRA EL SERVIDOR CUANDO RECIBE UN MENSAJE DE UN CLIENTE QUE NO ES NUEVO
                     {
@@ -223,39 +224,51 @@ int main()
                                     // Si hay partidas
                                     if (hayPartidas)
                                     {
-                                        bool encontrado = buscarPartida(jugadores, partidas, i, MAX_MATCHES);
+                                        bool encontrado = buscarPartida(jugadores, partidas,numPartidas, i, MAX_MATCHES);
 
                                         if(encontrado)
                                         {
                                             //Partida SEMILLENA encontrada
+                                            numPartidas++;
                                             int waiting_player_socket = buscarSocketDisponible(jugadores, MAX_CLIENTS,i);
                                             printf("Partida SEMILLENA encontrada\n");
                                             printf("El jugador %d ha encontrado partida con el jugador %d\n", i, waiting_player_socket);
 
-                                            //Le envío al jugador que ha encontrado partida
-                                            bzero(buffer,sizeof(buffer));
-                                            sprintf(buffer,"+Ok! Encontrada partida\n");
-                                            send(i,buffer,sizeof(buffer),0);
-                                            
-                                            bzero(buffer,sizeof(buffer));
-                                            sprintf(buffer,"+Ok! Comienza la partida\n");
-                                            send(i,buffer,sizeof(buffer),0);
+                                            int pos2 = buscarSocket(jugadores, MAX_CLIENTS, i); //jugador 2
+                                            int pos1 = buscarSocket(jugadores, MAX_CLIENTS, waiting_player_socket); //jugador 1
 
+                                            //Le envío al jugador que ha encontrado partida
                                             //Le envío al otro jugador que ha encontrado partida
                                             bzero(buffer,sizeof(buffer));
                                             sprintf(buffer,"+Ok! Encontrada partida SEMILLENA\n");
-                                            send(partidas[i].socket2,buffer,sizeof(buffer),0);
+                                            send(jugadores[pos2].socket,buffer,sizeof(buffer),0);
+                                           
+                                            /*bzero(buffer,sizeof(buffer));
+                                            sprintf(buffer,"+Ok! Encontrada partida\n");
+                                            send(jugadores[pos1].socket,buffer,sizeof(buffer),0);
+                                            bzero(buffer,sizeof(buffer));
+                                            sprintf(buffer,"+Ok! Encontrada partida\n");
+                                            send(jugadores[pos2].socket,buffer,sizeof(buffer),0);*/
+                                            
+                                            bzero(buffer,sizeof(buffer));
+                                            sprintf(buffer,"+Ok! Comienza la partida\n");
+                                            send(jugadores[pos1].socket,buffer,sizeof(buffer),0);
+                                            
+                                            bzero(buffer,sizeof(buffer));
+                                            sprintf(buffer,"+Ok! Comienza la partida\n");
+                                            send(jugadores[pos2].socket,buffer,sizeof(buffer),0);
 
                                             //Actualizo el estado de los jugadores
-                                            //buscar la pos de una partida por socket de un jugador
-                                            // int pos1 = buscarSocket(jugadores, MAX_CLIENTS, i);
-                                            // int pos2 = buscarSocket(jugadores, MAX_CLIENTS, partidas[i].socket2);
+                                            jugadores[pos1].estado = JUGANDO;
+                                            jugadores[pos2].estado = JUGANDO; 
+                                            
+                                            //rellenar_datos_partidas(partidas,jugadores,pos1,pos2,numPartidas);
+                                            //numPartidas++;
 
-                                            // printf("pos: %d\n", pos1);
-                                            // printf("pos: %d\n", pos2);
-
-                                            // jugadores[pos1].estado = JUGANDO;
-                                            // jugadores[pos2].estado = JUGANDO;
+                                            //Imprimo los vectores de jugadores
+                                            printf("\npartida %d con jugador 1: %d y jugador 2: %d \n\n", numPartidas, partidas[numPartidas-1].socket1, partidas[numPartidas-1].socket2);
+                                            imprimirJugadores(jugadores, MAX_CLIENTS);
+                                            imprimirPartidas(partidas, MAX_MATCHES);                                            
                                         }
                                         else
                                         {
@@ -270,7 +283,7 @@ int main()
 
                                             //Actualizo el estado de los jugadores
                                             //buscar la pos de una partida por socket de un jugador
-                                            printf("i: %d\n", i);
+                                            //printf("i: %d\n", i);
 
                                             int pos1_1 = buscarSocket(jugadores, MAX_CLIENTS, i);
                                             

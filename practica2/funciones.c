@@ -124,30 +124,50 @@ bool comprobar_partidas(struct partida * partidas, int tam)
 //Esta funcion busca las partidas semillena o iniciada
 //false --> jugador solo
 //true --> jugador con otro jugador
-bool buscarPartida(struct jugador * user, struct partida * partidas, int socket, int tam)
+bool buscarPartida(struct jugador * user, struct partida * partidas,int numPartida, int socket, int tam)
 {
-    for(size_t i = 0; i < tam; i++)
+    //Si el jugador esta en una partida
+    /*for(size_t i = 0; i < tam; i++)
     {
         if(partidas[i].estado == SEMILLENA)
         {
-            partidas[i].socket2 = socket;
-            partidas[i].estado = INICIADA;
+            // partidas[i].socket2 = socket; //JUGADOR 2
+            // partidas[i].estado = INICIADA;
             return true;
         }
-    }  
-    
+    } */ 
+    if(partidas[numPartida].estado==SEMILLENA)
+    {
+        partidas[numPartida].socket2 = socket; //JUGADOR 2
+        partidas[numPartida].estado = INICIADA;
+        return true;
+    }
+    else if(partidas[numPartida].estado==VACIA)
+    {
+        partidas[numPartida].socket1 = socket; //JUGADOR 1
+        partidas[numPartida].estado = SEMILLENA;
+        return false;
+    }
+    /*    //Si no hay partidas semillena, se crea una nueva
     for(size_t i = 0; i < tam; i++)
     {
         if(partidas[i].estado == VACIA)
         {
-            partidas[i].socket1 = socket;
+            //partidas[i].socket1 = socket; //JUGADOR 1
             partidas[i].estado = SEMILLENA;
             return false;
         }
-    }      
+    }  */    
 
     return false;
 }
+
+/*void rellenar_datos_partidas(struct partida * partidas, struct jugador * jugadores, int pos1, int pos2, int num_partida)
+{
+    partidas[num_partida].socket1 = jugadores[pos1].socket;
+    partidas[num_partida].socket2 = jugadores[pos2].socket;
+    partidas[num_partida].estado = INICIADA;
+}*/
 
 // void actualizarEstado_partida(struct partida * partidas, struct jugador * jugadores, int tam)
 // {
@@ -227,4 +247,44 @@ int buscarSocketDisponible(struct jugador * jugadores, int tam,int s)
         }
     }
     return -1;
+}
+
+void imprimirJugadores(struct jugador * jugadores, int tam)
+{
+    for(int i=0; i<tam; i++)
+    {
+        printf("Socket: %d\n", jugadores[i].socket);
+        printf("Estado: %d\n", jugadores[i].estado);
+        printf("Nombre: %s\n", jugadores[i].nombre_user);
+        /*printf("Password: %s\n", jugadores[i].password);
+        printf("Puntuacion: %d\n", jugadores[i].puntuacion);
+        printf("Partidas ganadas: %d\n", jugadores[i].partidas_ganadas);
+        printf("Partidas perdidas: %d\n", jugadores[i].partidas_perdidas);
+        printf("Partidas empatadas: %d\n", jugadores[i].partidas_empatadas);
+        printf("Partidas abandonadas: %d\n", jugadores[i].partidas_abandonadas);
+        printf("Partidas jugadas: %d\n", jugadores[i].partidas_jugadas);
+        printf("Partidas en curso: %d\n", jugadores[i].partidas_en_curso);
+        printf("Partidas en espera: %d\n", jugadores[i].partidas_en_espera);
+        printf("Partidas en finalizadas: %d\n", jugadores[i].partidas_finalizadas);
+        printf("Partidas en no conectado: %d\n", jugadores[i].partidas_no_conectado);
+        printf("Partidas en logueado: %d\n", jugadores[i].partidas_logueado);
+        printf("Partidas en conectado: %d\n", jugadores[i].partidas_conectado);
+        printf("Partidas en iniciada: %d\n", jugadores[i].partidas_iniciada);
+        printf("Partidas en semillena: %d\n", jugadores[i].partidas_semillena);
+        printf("Partidas en vacia: %d\n", jugadores[i].partidas_vacia);
+        printf("Partidas en esperando: %d\n", jugadores[i].partidas_esperando);
+        printf("Partidas en abandonado: %d\n", jugadores[i].partidas_abandonado);
+        printf("Partidas en finalizada: %d\n", jugadores[i].partidas_finalizada);
+        printf("Partidas en no conectado: %d\n", jug*/
+    }
+}
+
+void imprimirPartidas(struct partida * partidas, int tam)
+{
+    for(int i=0; i<tam; i++)
+    {
+        printf("Socket1: %d\n", partidas[i].socket1);
+        printf("Socket2: %d\n", partidas[i].socket2);
+        printf("Estado: %d\n", partidas[i].estado);
+    }
 }

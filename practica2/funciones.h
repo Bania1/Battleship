@@ -52,8 +52,8 @@ struct jugador
 
 struct partida
 {
-    int socket1;
-    int socket2;
+    int socket1; //socket del jugador 1
+    int socket2; //socket del jugador 2
     int estado;
     int turno;
 
@@ -86,11 +86,11 @@ bool comprobar_partidas(struct partida * partidas, int tam);
 
 void crearPartida(struct partida * partidas, struct jugador * jugadores, int socket, int tam);
 
-bool buscarPartida(struct jugador *user, struct partida *partidas, int socket, int tam);
+bool buscarPartida(struct jugador *user, struct partida *partidas, int numPartida, int socket, int tam);
 
 void actualizarEstado_partida(struct partida * partidas, struct jugador * jugadores, int tam);
 
-
+// void rellenar_datos_partidas(struct partida * partidas, struct jugador * jugadores, int pos1, int pos2, int num_partida);
 
 //-------------Funciones de servidor----------------
 //
@@ -101,6 +101,10 @@ void guardarNuevoJugador(struct jugador * jugadores,int tam, int socket,int pos)
 int buscarSocket(struct jugador * jugadores,int tam, int socket);
 
 int buscarSocketDisponible(struct jugador * jugadores, int tam, int s);
+
+void imprimirJugadores(struct jugador * jugadores, int tam);
+
+void imprimirPartidas(struct partida * partidas, int tam);
 
 //Hacer una funcion de buscar usuario
 
