@@ -229,7 +229,7 @@ int main()
                                         if(encontrado)
                                         {
                                             //Partida SEMILLENA encontrada
-                                            numPartidas++;
+                                            numPartidas++;//incremento el numero de partidas
                                             int waiting_player_socket = buscarSocketDisponible(jugadores, MAX_CLIENTS,i);
                                             printf("Partida SEMILLENA encontrada\n");
                                             printf("El jugador %d ha encontrado partida con el jugador %d\n", i, waiting_player_socket);
