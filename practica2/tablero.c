@@ -37,6 +37,42 @@ void imprimirCuadricula(Cuadricula* cuadricula) {
     }
 }
 
+// Función para verificar si un espacio está disponible para colocar un barco
+int esEspacioDisponible(Cuadricula* cuadricula, int fila, int columna, int orientacion, int tamano) {
+    if (orientacion == 0) {
+        if (columna + tamano > COLUMNAS) {
+            return 0;  // Fuera de la cuadrícula
+        }
+        for (int i = -1; i <= tamano; i++) {
+            for (int j = -1; j <= 1; j++) {
+                int x = fila + i;
+                int y = columna + j;
+                if (x >= 0 && x < FILAS && y >= 0 && y < COLUMNAS) {
+                    if (cuadricula->tablero[x][y] != '~') {
+                        return 0;  // Colisión con otro barco
+                    }
+                }
+            }
+        }
+    } else {
+        if (fila + tamano > FILAS) {
+            return 0;  // Fuera de la cuadrícula
+        }
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= tamano; j++) {
+                int x = fila + i;
+                int y = columna + j;
+                if (x >= 0 && x < FILAS && y >= 0 && y < COLUMNAS) {
+                    if (cuadricula->tablero[x][y] != '~') {
+                        return 0;  // Colisión con otro barco
+                    }
+                }
+            }
+        }
+    }
+    return 1;  // Espacio disponible
+}
+
 // Función para colocar un barco en una cuadricula
 int colocarBarco(Cuadricula* cuadricula, Barco* barco) {
     int fila, columna, orientacion;
@@ -61,41 +97,6 @@ int colocarBarco(Cuadricula* cuadricula, Barco* barco) {
     return 1;  // Barco colocado con éxito
 }
 
-// Función para verificar si un espacio está disponible para colocar un barco
-int esEspacioDisponible(Cuadricula* cuadricula, int fila, int columna, int orientacion, int tamano) {
-    if (orientacion == 0) {
-        if (columna + tamano > COLUMNAS) {
-            return 0;  // Fuera de la cuadrícula
-        }
-        for (int i = -1; i <= tamano; i++) {
-            for (int j = -1; j <= 1; j++) {
-                int x = fila + i;
-                int y = columna + j;
-                if (x >= 0 && x < FILAS && y >= 0 && y < COLUMNAS) {
-                    if (cuadricula->tablero[x][y] != '~') {
-                        return 0;  // Colisión con otro barco
-                    }
-                }
-            }
-        }
-    } else {
-        if (fila + tamano > FILAS) {
-            return 0;  // Fuera de la cuadrícula
-        }
-        for (int i = -1; i <= tamano; i++) {
-            for (int j = -1; j <= 1; j++) {
-                int x = fila + j;
-                int y = columna + i;
-                if (x >= 0 && x < FILAS && y >= 0 && y < COLUMNAS) {
-                    if (cuadricula->tablero[x][y] != '~') {
-                        return 0;  // Colisión con otro barco
-                    }
-                }
-            }
-        }
-    }
-    return 1;  // Espacio disponible
-}
 
 int main() {
     // Inicializar la generación de números aleatorios
@@ -123,6 +124,7 @@ int main() {
 
     return 0;
 }
+
 
 
 // #include <stdio.h>
