@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 #define FILAS 10
 #define COLUMNAS 10
@@ -17,6 +18,30 @@ typedef struct
     int tamano;
     char simbolo;
 } Barco;
+
+// Estructura para representar las estadísticas de un jugador
+typedef struct {
+    int disparos_totales;
+    int aciertos;
+    int fallos;
+} EstadisticasJugador;
+
+// Función para mostrar el menú de bienvenida
+void mostrarMenuBienvenida()
+{
+    printf("\n=============================");
+    printf("\nBienvenido a Hundir la Flota\n");
+    printf("================================================================\n");
+    printf ("XXXXX   XXXX  XXXXXX XXXXXX XX     XXXXXX  XXXXX XX  XX XX XXXX\n");
+    printf ("XX  XX XX  XX   XX     XX   XX     XX     XX     XX  XX XX XX  XX\n");
+    printf ("XXXXX  XX  XX   XX     XX   XX     XXXX    XXXX  XXXXXX XX XXXX\n"); 
+    printf ("XX  XX XXXXXX   XX     XX   XX     XX         XX XX  XX XX XX\n");
+    printf ("XXXXX  XX  XX   XX     XX   XXXXXX XXXXXX XXXXX  XX  XX XX XX\n");
+    printf("================================================================\n");
+    printf("\n1. Jugar\n");
+    printf("2. Salir\n");
+    printf("\nElija una opción: ");
+}
 
 // Función para inicializar una cuadricula con agua (~)
 void inicializarCuadricula(Cuadricula* cuadricula) 
@@ -124,12 +149,49 @@ int colocarBarco(Cuadricula* cuadricula, Barco* barco)
 
 int disparar(Cuadricula* cuadricula_disparo, Cuadricula* cuadricula_barco, char* coordenadas) 
 {
-    int fila = coordenadas[1] - '1';
-    int columna = coordenadas[0] - 'A';
+    int fila, columna;
 
-    if (cuadricula_disparo->tablero[fila][columna] == 'X' || cuadricula_disparo->tablero[fila][columna] == 'F' || cuadricula_disparo->tablero[fila][columna] == 'O') 
+    if (strlen(coordenadas) == 2) 
     {
-        return -1;  // Ya se disparó en esta ubicación
+        // Formato A1 - J9
+        if (coordenadas[0] >= 'A' && coordenadas[0] <= 'J' &&
+            coordenadas[1] >= '1' && coordenadas[1] <= '9') 
+            {
+            fila = coordenadas[1] - '1';
+            columna = coordenadas[0] - 'A';
+        } 
+        else 
+        {
+            printf("Coordenadas no válidas. Inténtalo de nuevo.\n");
+            return -1; // Indicar que las coordenadas no son válidas
+        }
+    } 
+    else if (strlen(coordenadas) == 3) 
+    {
+        // Formato A10 - J10
+        if (coordenadas[0] >= 'A' && coordenadas[0] <= 'J' &&
+            coordenadas[1] == '1' && coordenadas[2] == '0') 
+        {
+            fila = 9; // Fila 10 se maneja como fila 9 en la cuadrícula
+            columna = coordenadas[0] - 'A';
+        } 
+        else 
+        {
+            printf("Coordenadas no válidas. Inténtalo de nuevo.\n");
+            return -1; // Indicar que las coordenadas no son válidas
+        }
+    } 
+    else 
+    {
+        printf("Coordenadas no válidas. Inténtalo de nuevo.\n");
+        return -1; // Indicar que las coordenadas no son válidas
+    }
+
+    if (cuadricula_disparo->tablero[fila][columna] == 'X' ||
+        cuadricula_disparo->tablero[fila][columna] == 'F' ||
+        cuadricula_disparo->tablero[fila][columna] == 'O') 
+    {
+        return -1; // Ya se disparó en esta ubicación
     }
 
     if (cuadricula_barco->tablero[fila][columna] == 'B') 
@@ -146,127 +208,211 @@ int disparar(Cuadricula* cuadricula_disparo, Cuadricula* cuadricula_barco, char*
 }
 
 
+// int disparar(Cuadricula* cuadricula_disparo, Cuadricula* cuadricula_barco, char* coordenadas) 
+// {
+  
+//     int fila = coordenadas[1] - '1';
+//     int columna = coordenadas[0] - 'A';
+
+//     if (cuadricula_disparo->tablero[fila][columna] == 'X' || cuadricula_disparo->tablero[fila][columna] == 'F' || cuadricula_disparo->tablero[fila][columna] == 'O') 
+//     {
+//         return -1;  // Ya se disparó en esta ubicación
+//     }
+
+//     if (cuadricula_barco->tablero[fila][columna] == 'B') 
+//     {
+//         cuadricula_disparo->tablero[fila][columna] = 'X';  // Disparo acertado
+//         cuadricula_barco->tablero[fila][columna] = 'O';     // Barco golpeado
+//         return 1;
+//     } 
+//     else 
+//     {
+//         cuadricula_disparo->tablero[fila][columna] = 'F';  // Disparo fallido
+//         return 0;
+//     }
+// }
+
+// Función para mostrar las estadísticas de los jugadores
+void mostrarEstadisticas(EstadisticasJugador jugador1, EstadisticasJugador jugador2) 
+{
+    printf("\n-----------> Estadísticas del Jugador 1: <-----------\n");
+    printf("Disparos totales: %d\n", jugador1.disparos_totales);
+    printf("Disparos acertados: %d\n", jugador1.aciertos);
+    printf("Disparos fallidos: %d\n", jugador1.fallos);
+    
+    printf("\n-----------> Estadísticas del Jugador 2: <-----------\n");
+    printf("Disparos totales: %d\n", jugador2.disparos_totales);
+    printf("Disparos acertados: %d\n", jugador2.aciertos);
+    printf("Disparos fallidos: %d\n", jugador2.fallos);
+}
+
 int main() 
 {
     // Inicializar la generación de números aleatorios
     srand(time(NULL));
 
-    // Definir los barcos con la letra "B"
-    Barco barcos[] = {{4, 'B'}, {3, 'B'}, {3, 'B'}, {2, 'B'}, {2, 'B'}};
-
-    // Crear las cuadrículas para dos jugadores: barcos y disparos
-    Cuadricula jugador1_barcos, jugador2_barcos, jugador1_disparos, jugador2_disparos;
-    inicializarCuadricula(&jugador1_barcos);
-    inicializarCuadricula(&jugador2_barcos);
-    inicializarCuadricula(&jugador1_disparos);
-    inicializarCuadricula(&jugador2_disparos);
-
-    // Colocar los barcos en las cuadrículas
-    for (int i = 0; i < 5; i++) 
+    // Mostrar el menú de bienvenida
+    int opcion;
+    do
     {
-        colocarBarco(&jugador1_barcos, &barcos[i]);
-        colocarBarco(&jugador2_barcos, &barcos[i]);
-    }
+        mostrarMenuBienvenida();
+        scanf("%d", &opcion);
+        getchar(); // Limpiar el búfer de entrada
 
-    // Juego: alternar los turnos de los jugadores
-    int turno = 1;
-    int ganador = 0;
-    while (!ganador) 
-    {
-        Cuadricula* cuadricula_barcos_propia;
-        Cuadricula* cuadricula_disparos_propia;
-        Cuadricula* cuadricula_barcos_contrincante;
-        Cuadricula* cuadricula_disparos_contrincante;
-
-        if (turno == 1) 
+        switch (opcion)
         {
-            cuadricula_barcos_propia = &jugador1_barcos;
-            cuadricula_disparos_propia = &jugador1_disparos;
-            cuadricula_barcos_contrincante = &jugador2_barcos;
-            cuadricula_disparos_contrincante = &jugador2_disparos;
-        } 
-        else 
-        {
-            cuadricula_barcos_propia = &jugador2_barcos;
-            cuadricula_disparos_propia = &jugador2_disparos;
-            cuadricula_barcos_contrincante = &jugador1_barcos;
-            cuadricula_disparos_contrincante = &jugador1_disparos;
-        }
+        case 1:
+            // Crear los barcos, cuadrículas y jugar (código existente)
+            // Definir los barcos con la letra "B"
+            Barco barcos[] = {{4, 'B'}, {3, 'B'}, {3, 'B'}, {2, 'B'}, {2, 'B'}};
 
-        printf("\nTurno del Jugador %d\n", turno);
-        printf("Tu cuadrícula de barcos:\n");
-        imprimirCuadricula(cuadricula_barcos_propia);
-        printf("Tu cuadrícula de disparos:\n");
-        imprimirCuadricula(cuadricula_disparos_propia);
+            // Crear las cuadrículas para dos jugadores: barcos y disparos
+            Cuadricula jugador1_barcos, jugador2_barcos, jugador1_disparos, jugador2_disparos;
+            
+            // Crear las estadísticas para dos jugadores
+            EstadisticasJugador stats1= {0, 0, 0};
+            EstadisticasJugador stats2= {0, 0, 0};
+            
+            inicializarCuadricula(&jugador1_barcos);
+            inicializarCuadricula(&jugador2_barcos);
+            inicializarCuadricula(&jugador1_disparos);
+            inicializarCuadricula(&jugador2_disparos);
 
-        // Lógica para que el jugador realice un disparo
-        int disparo_exitoso = 0;
-        while (!disparo_exitoso) 
-        {
-            char coordenadas[3];
-            printf("Introduce coordenadas para disparar (por ejemplo, A1): ");
-            scanf("%s", coordenadas);
-
-            if (coordenadas[0] >= 'A' && coordenadas[0] <= 'J' && coordenadas[1] >= '1' && coordenadas[1] <= '0' + FILAS) 
+            // Colocar los barcos en las cuadrículas
+            for (int i = 0; i < 1; i++) 
             {
-                int resultado = disparar(cuadricula_disparos_propia, cuadricula_barcos_contrincante, coordenadas);
-                if (resultado == 1) 
+                colocarBarco(&jugador1_barcos, &barcos[i]);
+                colocarBarco(&jugador2_barcos, &barcos[i]);
+            }
+
+            // Juego: alternar los turnos de los jugadores
+            int turno = 1;
+            int ganador = 0;
+            while (!ganador) 
+            {
+                Cuadricula* cuadricula_barcos_propia;
+                Cuadricula* cuadricula_disparos_propia;
+                Cuadricula* cuadricula_barcos_contrincante;
+                Cuadricula* cuadricula_disparos_contrincante;
+
+                // Estadísticas del jugador
+                EstadisticasJugador* statspropias;
+
+                if (turno == 1) 
                 {
-                    printf("¡Disparo acertado!\n");
-                } 
-                else if (resultado == 0) 
-                {
-                    printf("Disparo fallido\n");
+                    cuadricula_barcos_propia = &jugador1_barcos;
+                    cuadricula_disparos_propia = &jugador1_disparos;
+                    cuadricula_barcos_contrincante = &jugador2_barcos;
+                    cuadricula_disparos_contrincante = &jugador2_disparos;
+                    statspropias = &stats1;
                 } 
                 else 
                 {
-                    printf("Ya has disparado en esas coordenadas, intenta de nuevo.\n");
+                    cuadricula_barcos_propia = &jugador2_barcos;
+                    cuadricula_disparos_propia = &jugador2_disparos;
+                    cuadricula_barcos_contrincante = &jugador1_barcos;
+                    cuadricula_disparos_contrincante = &jugador1_disparos;
+                    statspropias = &stats2;
                 }
-                disparo_exitoso = 1;
-            } 
-            else 
-            {
-                printf("Coordenadas no válidas. Inténtalo de nuevo.\n");
-            }
-        }
 
-        // Verificar si el jugador ganó
-        int hundidos = 1;
-        for (int i = 0; i < 5; i++) 
-        {
-            Barco barco = barcos[i];
-            for (int fila = 0; fila < FILAS; fila++) 
-            {
-                for (int columna = 0; columna < COLUMNAS; columna++) 
+                printf("\n-----------> Turno del Jugador %d <-----------\n\n", turno);
+                printf("Tu cuadrícula de barcos:\n\n");
+                imprimirCuadricula(cuadricula_barcos_propia);
+                printf("\nTu cuadrícula de disparos:\n\n");
+                imprimirCuadricula(cuadricula_disparos_propia);
+
+                // Lógica para que el jugador realice un disparo
+                int disparo_exitoso = 0;
+                while (!disparo_exitoso) 
                 {
-                    if (cuadricula_barcos_contrincante->tablero[fila][columna] == barco.simbolo) 
+                    char coordenadas[3];
+                    printf("\nIntroduce coordenadas para disparar (por ejemplo, A1): ");
+                    scanf("%s", coordenadas);
+
+                    if (coordenadas[0] >= 'A' && coordenadas[0] <= 'J' && coordenadas[1] >= '1' && coordenadas[1] <= '0' + FILAS) 
                     {
-                        hundidos = 0;
+                        int resultado = disparar(cuadricula_disparos_propia, cuadricula_barcos_contrincante, coordenadas);
+                        if (resultado == 1) 
+                        {
+                            printf("-----------> ¡Disparo acertado!\n");
+                            
+                            // Actualizar las estadísticas del jugador
+                            statspropias->aciertos++;
+                            statspropias->disparos_totales++;
+                        } 
+                        else if (resultado == 0) 
+                        {
+                            printf("-----------> Disparo fallido\n");
+                            
+                            // Actualizar las estadísticas del jugador
+                            statspropias->fallos++;
+                            statspropias->disparos_totales++;
+                        } 
+                        else 
+                        {
+                            printf("Ya has disparado en esas coordenadas, intenta de nuevo.\n");
+                        }
+                        disparo_exitoso = 1;
+                    } 
+                    else 
+                    {
+                        printf("Coordenadas no válidas. Inténtalo de nuevo.\n");
+                    }
+                }
+
+                // Verificar si el jugador ganó
+                int hundidos = 1;
+                for (int i = 0; i < 5; i++) 
+                {
+                    Barco barco = barcos[i];
+                    for (int fila = 0; fila < FILAS; fila++) 
+                    {
+                        for (int columna = 0; columna < COLUMNAS; columna++) 
+                        {
+                            if (cuadricula_barcos_contrincante->tablero[fila][columna] == barco.simbolo) 
+                            {
+                                hundidos = 0;
+                                break;
+                            }
+                        }
+                        if (!hundidos) 
+                        {
+                            break;
+                        }
+                    }
+                    if (hundidos) 
+                    {
                         break;
                     }
                 }
-                if (!hundidos) 
+
+                if (hundidos) 
                 {
-                    break;
+                    ganador = turno;
+                } 
+                else 
+                {
+                    turno = (turno == 1) ? 2 : 1;
                 }
             }
-            if (hundidos) 
-            {
-                break;
-            }
+
+            printf("\n¡El Jugador %d ha ganado! ¡Felicidades!\n", ganador);
+            
+            // Mostrar las estadísticas de los jugadores
+            printf("\n-----------------------------------\n");
+            mostrarEstadisticas(stats1, stats2);
+
+            break;
+
+        case 2:
+            printf("\nGracias por jugar. Hasta luego.\n");
+            return 0; // Salir del programa
+            break;
+
+        default:
+            printf("\nOpción no válida. Intente de nuevo.\n");
         }
+    } while (opcion != 2);
 
-        if (hundidos) 
-        {
-            ganador = turno;
-        } 
-        else 
-        {
-            turno = (turno == 1) ? 2 : 1;
-        }
-    }
-
-    printf("¡El Jugador %d ha ganado! ¡Felicidades!\n", ganador);
-
-    return 0;
+    
 }
