@@ -279,7 +279,7 @@ int main()
             inicializarCuadricula(&jugador2_disparos);
 
             // Colocar los barcos en las cuadrículas
-            for (int i = 0; i < 1; i++) 
+            for (int i = 0; i < 5; i++) 
             {
                 colocarBarco(&jugador1_barcos, &barcos[i]);
                 colocarBarco(&jugador2_barcos, &barcos[i]);
