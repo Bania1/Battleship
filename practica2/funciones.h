@@ -31,6 +31,7 @@
 #define SEMILLENA 7 //1 jugador en partida
 #define INICIADA 8 //2 jugadores en partida
 #define TERMINADA 9 //partida terminada
+#define COMPLETA 10 //partida completa
 
 //Mensajes y tamaños
 #define MSG_SIZE 250
@@ -62,6 +63,29 @@ struct partida
     
 };
 
+#define FILAS 10
+#define COLUMNAS 10
+
+// Estructura para representar una cuadrícula
+typedef struct 
+{
+    char tablero[FILAS][COLUMNAS];
+} Cuadricula;
+
+// Estructura para representar un barco
+typedef struct 
+{
+    int tamano;
+    char simbolo;
+} Barco;
+
+// Estructura para representar las estadísticas de un jugador
+typedef struct {
+    int disparos_totales;
+    int aciertos;
+    int fallos;
+} EstadisticasJugador;
+
 
 //-------------Funciones de usuario----------------
 //
@@ -86,7 +110,7 @@ bool comprobar_partidas(struct partida * partidas, int tam);
 
 void crearPartida(struct partida * partidas, struct jugador * jugadores, int socket, int tam);
 
-bool buscarPartida(struct jugador *user, struct partida *partidas, int numPartida, int socket, int tam);
+int buscarPartida(struct jugador *user, struct partida *partidas, int numPartida, int socket, int tam);
 
 void actualizarEstado_partida(struct partida * partidas, struct jugador * jugadores, int tam);
 
@@ -100,11 +124,13 @@ void guardarNuevoJugador(struct jugador * jugadores,int tam, int socket,int pos)
 
 int buscarSocket(struct jugador * jugadores,int tam, int socket);
 
-int buscarSocketDisponible(struct jugador * jugadores, int tam, int s);
+int buscarSocketDisponible(struct jugador * jugadores, int tam, int pos);
 
 void imprimirJugadores(struct jugador * jugadores, int tam);
 
 void imprimirPartidas(struct partida * partidas, int tam);
+
+void imprimirCuadricula(Cuadricula* cuadricula) ;
 
 //Hacer una funcion de buscar usuario
 

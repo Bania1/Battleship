@@ -66,7 +66,7 @@ bool passwordCorrecta(char * usuario, char * password)
 //True si se repite
 bool comprobar_usuario(struct jugador * jugadores, int tam,int socket, char * nombre)
 {
-    int cont=0;
+    //int cont=0;
     for(int i=0; i<tam; i++)
     {
         if(jugadores[i].estado == LOGUEADO && (strcmp(jugadores[i].nombre_user,nombre) == 0))
@@ -121,11 +121,32 @@ bool comprobar_partidas(struct partida * partidas, int tam)
     return false;
 }
 
-//Esta funcion busca las partidas semillena o iniciada
-//false --> jugador solo
-//true --> jugador con otro jugador
-bool buscarPartida(struct jugador * user, struct partida * partidas,int numPartida, int socket, int tam)
+//Esta funcion busca las partidas disponibles
+int buscarPartida(struct jugador * user, struct partida * partidas,int numPartida, int socket, int tam)
 {
+    //Busca si hay un jugador en una partida
+    for(size_t i = 0; i < tam; i++)
+    {
+        if(partidas[i].estado == SEMILLENA)
+        {
+            partidas[i].socket2 = socket; //JUGADOR 2
+            partidas[i].estado = INICIADA;
+            return SEMILLENA;
+        }
+    }
+    //Busca una partida VACIA
+    for(size_t i = 0; i < tam; i++)
+    {
+        if(partidas[i].estado == VACIA)
+        {
+            partidas[i].socket1 = socket; //JUGADOR 1
+            partidas[i].estado = SEMILLENA;
+            return VACIA;
+        }
+    }
+    //Si no hay partidas disponibles
+    return COMPLETA;
+    
     //Si el jugador esta en una partida
     /*for(size_t i = 0; i < tam; i++)
     {
@@ -136,18 +157,18 @@ bool buscarPartida(struct jugador * user, struct partida * partidas,int numParti
             return true;
         }
     } */ 
-    if(partidas[numPartida].estado==SEMILLENA)
-    {
-        partidas[numPartida].socket2 = socket; //JUGADOR 2
-        partidas[numPartida].estado = INICIADA;
-        return true;
-    }
-    else if(partidas[numPartida].estado==VACIA)
-    {
-        partidas[numPartida].socket1 = socket; //JUGADOR 1
-        partidas[numPartida].estado = SEMILLENA;
-        return false;
-    }
+    // if(partidas[numPartida].estado==SEMILLENA)
+    // {
+    //     partidas[numPartida].socket2 = socket; //JUGADOR 2
+    //     partidas[numPartida].estado = INICIADA;
+    //     return ;
+    // }
+    // else if(partidas[numPartida].estado==VACIA)
+    // {
+    //     partidas[numPartida].socket1 = socket; //JUGADOR 1
+    //     partidas[numPartida].estado = SEMILLENA;
+    //     return false;
+    // }
     /*    //Si no hay partidas semillena, se crea una nueva
     for(size_t i = 0; i < tam; i++)
     {
@@ -157,9 +178,9 @@ bool buscarPartida(struct jugador * user, struct partida * partidas,int numParti
             partidas[i].estado = SEMILLENA;
             return false;
         }
-    }  */    
+    }     
 
-    return false;
+    return false; */
 }
 
 /*void rellenar_datos_partidas(struct partida * partidas, struct jugador * jugadores, int pos1, int pos2, int num_partida)
@@ -237,16 +258,23 @@ int buscarSocket(struct jugador * jugadores,int tam, int socket)
     return -1;
 }
 
-int buscarSocketDisponible(struct jugador * jugadores, int tam,int s)
+int buscarSocketDisponible(struct jugador * jugadores, int tam,int pos)
 {
     for(int i=0; i<tam; i++)
     {
-        if(jugadores[i].estado == ESPERANDO && jugadores[i].socket != s)
+        if(jugadores[i].estado == ESPERANDO && jugadores[i].socket != pos)
         {
             return jugadores[i].socket;
         }
     }
     return -1;
+    // for(int i=0; i<tam; i++)
+    // {
+    //     if(partidas[i].socket2 == socket)
+    //     {
+    //         return partidas[i].socket1;
+    //     }
+    // }
 }
 
 void imprimirJugadores(struct jugador * jugadores, int tam)
@@ -286,5 +314,19 @@ void imprimirPartidas(struct partida * partidas, int tam)
         printf("Socket1: %d\n", partidas[i].socket1);
         printf("Socket2: %d\n", partidas[i].socket2);
         printf("Estado: %d\n", partidas[i].estado);
+    }
+}
+
+void imprimirCuadricula(Cuadricula* cuadricula) 
+{
+    printf("   A B C D E F G H I J\n");
+    for (int i = 0; i < FILAS; i++) 
+    {
+        printf("%2d ", i + 1);
+        for (int j = 0; j < COLUMNAS; j++) 
+        {
+            printf("%c ", cuadricula->tablero[i][j]);
+        }
+        printf("\n");
     }
 }
