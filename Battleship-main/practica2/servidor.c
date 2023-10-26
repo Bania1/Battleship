@@ -332,7 +332,7 @@ int main()
                                     }
                                 }
                             }
-                            else if (strncmp(buffer, "USUARIO", 7) == 0)
+                            else if (strncmp(buffer, "DISPARO", 7) == 0)
                             {
                                 char col;
                                 int fil;
