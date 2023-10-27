@@ -43,6 +43,7 @@ void inicializarCuadricula(Cuadricula* cuadricula) {
     for (int i = 0; i < FILAS; i++) {
         for (int j = 0; j < COLUMNAS; j++) {
             cuadricula->tablero[i][j] = '~';
+            cuadricula->idBarco[i][j] = -1;
         }
     }
 }
@@ -106,12 +107,12 @@ int colocarBarco(Cuadricula* cuadricula, Barco* barco) {
     if (orientacion == 0) {
         for (int i = 0; i < barco->tamano; i++) {
             cuadricula->tablero[fila][columna + i] = barco->simbolo;
-            cuadricula->idBarco[fila][columna+1]=barco->idBarco;
+            cuadricula->idBarco[fila][columna+i]=barco->idBarco;
         }
     } else {
         for (int i = 0; i < barco->tamano; i++) {
             cuadricula->tablero[fila + i][columna] = barco->simbolo;
-            cuadricula->idBarco[fila+1][columna]=barco->idBarco;
+            cuadricula->idBarco[fila+i][columna]=barco->idBarco;
         }
     }
     
@@ -155,10 +156,11 @@ int disparar(Cuadricula* cuadricula_disparo, Cuadricula* cuadricula_barco, Barco
 
         // Reducir la salud del barco golpeado
         
-        for(int j = 0; j < FILAS; j++){
+        /*for(int j = 0; j < FILAS; j++){
             for(int k = 0; k < COLUMNAS; k++){
                 for (int i = 0; i < 5; i++) {
                     if(cuadricula_barco->tablero[j][k] == cuadricula_barco->tablero[fila][columna] && cuadricula_barco->idBarco[j][k]==barcos[i].idBarco){
+                        cuadricula_barco->idBarco[j][k]+=10;
                         barcos[i].salud--;
                         printf("id:%d  salud:%d\n",barcos[i].idBarco,barcos[i].salud);
                         if (barcos[i].salud == 0) {
@@ -176,8 +178,15 @@ int disparar(Cuadricula* cuadricula_disparo, Cuadricula* cuadricula_barco, Barco
             //         printf("¡Barco hundido! Coordenadas: %c%d\n", coordenadas[0], fila + 1);
             //     }
             // }
-        }
+        }*/
 
+        int posBarco=cuadricula_barco->idBarco[fila][columna];
+        barcos[posBarco].salud--;
+        //printf("id:%d  salud:%d\n",barcos[posBarco].idBarco,barcos[posBarco].salud);
+        if (barcos[posBarco].salud == 0) 
+        {
+            printf("¡Barco hundido! Coordenadas: %c%d\n", coordenadas[0], fila + 1);
+        }
         return 1;
     } else {
         cuadricula_disparo->tablero[fila][columna] = 'F'; // Disparo fallido
@@ -242,8 +251,8 @@ int main() {
         switch (opcion) {
             case 1:
                 // Crear los barcos, cuadrículas y jugar
-                Barco barcos1[] = {{4, 'B', 0,1}, {3, 'B', 0,2}, {3, 'B', 0,3}, {2, 'B', 0,4}, {2, 'B', 0,5}};
-                Barco barcos2[] = {{4, 'B', 0,1}, {3, 'B', 0,2}, {3, 'B', 0,3}, {2, 'B', 0,4}, {2, 'B', 0,5}};
+                Barco barcos1[] = {{4, 'B', 0,0}, {3, 'B', 0,1}, {3, 'B', 0,2}, {2, 'B', 0,3}, {2, 'B', 0,4}};
+                Barco barcos2[] = {{4, 'B', 0,0}, {3, 'B', 0,1}, {3, 'B', 0,2}, {2, 'B', 0,3}, {2, 'B', 0,4}};
                 
                 // Crear las cuadrículas para dos jugadores: barcos y disparos
                 Cuadricula jugador1_barcos, jugador2_barcos, jugador1_disparos, jugador2_disparos;

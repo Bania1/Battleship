@@ -415,12 +415,12 @@ void imprimirCuadriculaBuffer(Cuadricula* cuadricula, char * buffer) {
     buffer[0] = '\0';
 
     // Agrega la primera fila con letras de columna al búfer
-    strcat(buffer, "   A B C D E F G H I J\n");
+    //strcat(buffer, "   A B C D E F G H I J\n");
 
     for (int i = 0; i < FILAS; i++) {
-        char fila[4];
-        snprintf(fila, sizeof(fila), "%2d ", i + 1);
-        strcat(buffer, fila);
+        //char fila[4];
+        //snprintf(fila, sizeof(fila), "%2d ", i + 1);
+        //strcat(buffer, fila);
 
         for (int j = 0; j < COLUMNAS; j++) {
             char celda[4];
@@ -428,6 +428,6 @@ void imprimirCuadriculaBuffer(Cuadricula* cuadricula, char * buffer) {
             strcat(buffer, celda);
         }
 
-        strcat(buffer, "\n");
+        strcat(buffer, ";");
     }
 }
