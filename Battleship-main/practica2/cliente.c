@@ -8,6 +8,9 @@
 #include <unistd.h>
 #include <time.h>
 #include <arpa/inet.h>
+#include <sys/select.h>
+
+#include "funciones.h"
 
 int main()
 {
@@ -81,6 +84,19 @@ int main()
 
 			if (strcmp(buffer, "Desconexión servidor\n") == 0)
 				fin = 1;
+			
+			bzero(buffer, sizeof(buffer));
+			//printf("Mensaje del servidor: %s\n", buffer);
+			// bzero(buffer, sizeof(buffer));
+			// char * token = strtok(buffer, " ");
+			// recv(sd, buffer, sizeof(buffer), 0);
+
+			//Creacion del tablero
+			// Cuadricula *tableroBarcos;
+			// stringBarcosToMatriz(buffer, tableroBarcos);
+
+			// imprimirCuadricula(tableroBarcos);
+			
 		}
 		else
 		{

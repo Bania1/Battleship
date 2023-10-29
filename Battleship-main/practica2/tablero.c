@@ -237,6 +237,140 @@ bool comprobarGanador(Cuadricula* cuadricula_barco,Barco barcos[]){
     }
 }
 
+char* matrizBarcosToString(Cuadricula* cuadricula)
+{
+    //char cadena[1000] = "";
+    char *cadena = malloc(1000 * sizeof(char)); // Asigna memoria dinámica
+    if (cadena == NULL) {
+        // Manejo de error si malloc falla
+        exit(1); // o devuelve NULL o haz lo que sea apropiado en tu aplicación
+    }
+    int cont=0;
+
+    for(int i=0;i<FILAS;i++)
+    {
+        for(int j=0;j<COLUMNAS;j++)
+        {
+            if(cuadricula->tablero[i][j]=='~')
+            {
+                strcat(cadena,"A");
+                cont++;
+            }
+            else if(cuadricula->tablero[i][j]=='B')
+            {
+                strcat(cadena,"B");
+                cont++;
+            }
+            else if(cuadricula->tablero[i][j]=='O')
+            {
+                strcat(cadena,"B");
+                cont++;
+            }
+            if(cont%10==0)
+            {
+                strcat(cadena,";");
+            }
+        }
+    }
+    return cadena;
+}
+
+char* matrizDisparosToString(Cuadricula* cuadricula)
+{
+    //char cadena[1000] = "";
+    char *cadena = malloc(1000 * sizeof(char)); // Asigna memoria dinámica
+    if (cadena == NULL) {
+        // Manejo de error si malloc falla
+        exit(1); // o devuelve NULL o haz lo que sea apropiado en tu aplicación
+    }
+    int cont=0;
+
+    for(int i=0;i<FILAS;i++)
+    {
+        for(int j=0;j<COLUMNAS;j++)
+        {
+            if(cuadricula->tablero[i][j]=='~')
+            {
+                strcat(cadena,"A");
+                cont++;
+            }
+            else if(cuadricula->tablero[i][j]=='X')
+            {
+                strcat(cadena,"X");
+                cont++;
+            }
+            else if(cuadricula->tablero[i][j]=='F')
+            {
+                strcat(cadena,"F");
+                cont++;
+            }
+            if(cont%10==0)
+            {
+                strcat(cadena,";");
+            }
+        }
+    }
+    return cadena;
+}
+
+void stringBarcosToMatriz(char *cadena,Cuadricula *cuadricula)
+{
+    int cont = 0;
+
+    for(int i = 0; i < FILAS; i++)
+    {
+        for(int j = 0; j < COLUMNAS; j++)
+        {
+            if(cadena[cont] == 'A')
+            {
+                cuadricula->tablero[i][j] = '~';
+            }
+            else if(cadena[cont] == 'B')
+            {
+                cuadricula->tablero[i][j] = 'B';
+            }
+            else
+            {
+                exit(1);
+            }
+            cont++;
+        }
+        // Ignora el punto y coma que separa las filas
+        cont++;
+    }
+}
+
+void stringDisparosToMatriz(char *cadena,Cuadricula *cuadricula)
+{
+    int cont = 0;
+
+    for(int i = 0; i < FILAS; i++)
+    {
+        for(int j = 0; j < COLUMNAS; j++)
+        {
+            if(cadena[cont] == 'A')
+            {
+                cuadricula->tablero[i][j] = '~';
+            }
+            else if(cadena[cont] == 'X')
+            {
+                cuadricula->tablero[i][j] = 'X';
+            }
+            else if(cadena[cont] == 'F')
+            {
+                cuadricula->tablero[i][j] = 'F';
+            }
+            else
+            {
+                exit(1);
+            }
+            cont++;
+        }
+        // Ignora el punto y coma que separa las filas
+        cont++;
+    }
+}
+
 int main() {
     // Inicializar la generación de números aleatorios
     srand(time(NULL));
@@ -298,6 +432,17 @@ int main() {
                     printf("\nTurno del Jugador %d\n", turno);
                     printf("Tu cuadrícula de barcos:\n");
                     imprimirCuadricula(cuadricula_barcos_propia);
+                    
+                    //char * cadena=matrizToString(cuadricula_barcos_propia);
+                    
+                    //Cuadricula *c;
+                    
+                    //inicializarCuadricula(c);
+                    //stringToMatriz(cadena,c);
+                    
+                    //printf("%s\n",cadena);
+                    //imprimirCuadricula(c);
+
                     printf("Tu cuadrícula de disparos:\n");
                     imprimirCuadricula(cuadricula_disparos_propia);
 

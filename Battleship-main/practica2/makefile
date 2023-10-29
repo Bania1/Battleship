@@ -6,7 +6,7 @@ compilarServidor: servidor.c funciones.c
 
 compilarCliente: cliente.c
 	@echo "Compilando el cliente..."
-	gcc cliente.c -o cliente
+	gcc cliente.c funciones.c -o cliente
 
 clean: servidor cliente
 	@echo "Borrando ejecutables..."

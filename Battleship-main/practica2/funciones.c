@@ -47,7 +47,7 @@ bool passwordCorrecta(char *usuario, char *password)
         char *resto;
 
         nombre = strtok_r(linea, ",", &resto);
-        passwordFichero = strtok(resto, ",");
+        passwordFichero = strtok(resto, "\n");
 
         if (strcmp(nombre, usuario) == 0)
         {
@@ -93,7 +93,19 @@ bool comprobar_usuario(struct jugador *jugadores, int tam, int socket, char *nom
 
 // Me falta hacer la funcion que pida el nombre del usuario que lo introduce
 
-// Me falta la funcion de registar usuario
+//Recibe el nombre del usuario y la contraseña y lo guarda en el fichero
+void guardarUsuario(char *usuario, char *password)
+{
+    FILE *fich;
+    fich = fopen("usuarios.txt", "a");
+    if (fich == NULL)
+    {
+        printf("Error al abrir el fichero\n");
+        return;
+    }
+    fprintf(fich, "%s,%s\n", usuario, password);
+    fclose(fich);
+}
 
 //-----------------Funciones partidas-------------------
 //
@@ -396,13 +408,15 @@ int colocarBarco(Cuadricula* cuadricula, Barco* barco) {
     if (orientacion == 0) {
         for (int i = 0; i < barco->tamano; i++) {
             cuadricula->tablero[fila][columna + i] = barco->simbolo;
+            cuadricula->idBarco[fila][columna+i]=barco->idBarco;
         }
     } else {
         for (int i = 0; i < barco->tamano; i++) {
             cuadricula->tablero[fila + i][columna] = barco->simbolo;
+            cuadricula->idBarco[fila+i][columna]=barco->idBarco;
         }
     }
-
+    
     // Inicializar la salud del barco
     barco->salud = barco->tamano;
 
@@ -431,3 +445,139 @@ void imprimirCuadriculaBuffer(Cuadricula* cuadricula, char * buffer) {
         strcat(buffer, ";");
     }
 }
+
+char* matrizBarcosToString(Cuadricula* cuadricula)
+{
+    char *cadena = malloc(MSG_SIZE * sizeof(char)); // Asigna memoria dinámica
+
+    if (cadena == NULL) {
+        // Manejo de error si malloc falla
+        exit(1); // o devuelve NULL o haz lo que sea apropiado en tu aplicación
+    }
+    int cont=0;
+
+    for(int i=0;i<FILAS;i++)
+    {
+        for(int j=0;j<COLUMNAS;j++)
+        {
+            if(cuadricula->tablero[i][j]=='~')
+            {
+                strcat(cadena,"A");
+                cont++;
+            }
+            else if(cuadricula->tablero[i][j]=='B')
+            {
+                strcat(cadena,"B");
+                cont++;
+            }
+            else if(cuadricula->tablero[i][j]=='O')
+            {
+                strcat(cadena,"B");
+                cont++;
+            }
+            if(cont%10==0)
+            {
+                strcat(cadena,";");
+            }
+        }
+    }
+    return cadena;
+}
+
+char* matrizDisparosToString(Cuadricula* cuadricula)
+{
+    //char cadena[1000] = "";
+    char *cadena = malloc(MSG_SIZE * sizeof(char)); // Asigna memoria dinámica
+
+    if (cadena == NULL) {
+        // Manejo de error si malloc falla
+        exit(1); // o devuelve NULL o haz lo que sea apropiado en tu aplicación
+    }
+    int cont=0;
+
+    for(int i=0;i<FILAS;i++)
+    {
+        for(int j=0;j<COLUMNAS;j++)
+        {
+            if(cuadricula->tablero[i][j]=='~')
+            {
+                strcat(cadena,"A");
+                cont++;
+            }
+            else if(cuadricula->tablero[i][j]=='X')
+            {
+                strcat(cadena,"X");
+                cont++;
+            }
+            else if(cuadricula->tablero[i][j]=='F')
+            {
+                strcat(cadena,"F");
+                cont++;
+            }
+            if(cont%10==0)
+            {
+                strcat(cadena,";");
+            }
+        }
+    }
+    return cadena;
+}
+
+void stringBarcosToMatriz(char *cadena,Cuadricula *cuadricula)
+{
+    int cont = 0;
+
+    for(int i = 0; i < FILAS; i++)
+    {
+        for(int j = 0; j < COLUMNAS; j++)
+        {
+            if(cadena[cont] == 'A')
+            {
+                cuadricula->tablero[i][j] = '~';
+            }
+            else if(cadena[cont] == 'B')
+            {
+                cuadricula->tablero[i][j] = 'B';
+            }
+            else
+            {
+                exit(1);
+            }
+            cont++;
+        }
+        // Ignora el punto y coma que separa las filas
+        cont++;
+    }
+}
+
+void stringDisparosToMatriz(char *cadena,Cuadricula *cuadricula)
+{
+    int cont = 0;
+
+    for(int i = 0; i < FILAS; i++)
+    {
+        for(int j = 0; j < COLUMNAS; j++)
+        {
+            if(cadena[cont] == 'A')
+            {
+                cuadricula->tablero[i][j] = '~';
+            }
+            else if(cadena[cont] == 'X')
+            {
+                cuadricula->tablero[i][j] = 'X';
+            }
+            else if(cadena[cont] == 'F')
+            {
+                cuadricula->tablero[i][j] = 'F';
+            }
+            else
+            {
+                exit(1);
+            }
+            cont++;
+        }
+        // Ignora el punto y coma que separa las filas
+        cont++;
+    }
+}
+

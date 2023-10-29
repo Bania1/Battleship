@@ -284,30 +284,39 @@ int main()
 
                                         // Creo los tableros
                                         //  Crear los barcos, cuadrículas y jugar
-                                        Barco barcos[] = {{4, 'B', 0}, {3, 'B', 0}, {3, 'B', 0}, {2, 'B', 0}, {2, 'B', 0}};
+                                        Barco barcos1[] = {{4, 'B', 0,0}, {3, 'B', 0,1}, {3, 'B', 0,2}, {2, 'B', 0,3}, {2, 'B', 0,4}};
+                                        Barco barcos2[] = {{4, 'B', 0,0}, {3, 'B', 0,1}, {3, 'B', 0,2}, {2, 'B', 0,3}, {2, 'B', 0,4}};
 
-                                        inicializarCuadricula(&partidas[idPartida].tablero1);
-                                        inicializarCuadricula(&partidas[idPartida].tablero2);
+                                        inicializarCuadricula(&partidas[idPartida].tableroBarcos1);
+                                        inicializarCuadricula(&partidas[idPartida].tableroBarcos2);
 
                                         // Colocar los barcos en las cuadrículas
                                         for (int i = 0; i < 5; i++)
                                         {
-                                            colocarBarco(&partidas[idPartida].tablero1, &barcos[i]);
-                                            colocarBarco(&partidas[idPartida].tablero2, &barcos[i]);
+                                            colocarBarco(&partidas[idPartida].tableroBarcos1, &barcos1[i]);
+                                            colocarBarco(&partidas[idPartida].tableroBarcos2, &barcos2[i]);
                                         }
 
-                                        // Imprimo las cuadriculas en el servidor
-                                        imprimirCuadricula(&partidas[idPartida].tablero1);
-                                        imprimirCuadricula(&partidas[idPartida].tablero2);
+                                        //Funcion que convierta una matriz en cadena de caracteres
+                                        // A,A,A,A,B,B;A,A,A,B,B,B,B;
+                                        bzero(buffer, sizeof(buffer));
+                                        char *cadenaBarcos1 = matrizBarcosToString(&partidas[idPartida].tableroBarcos1);
+                                        char *cadenaBarcos2 = matrizBarcosToString(&partidas[idPartida].tableroBarcos2);
 
                                         // Envio los tableros a cada jugador
                                         bzero(buffer, sizeof(buffer));
-                                        imprimirCuadriculaBuffer(&partidas[idPartida].tablero1, buffer);
+                                        strcpy(buffer, cadenaBarcos1);
+                                        //imprimirCuadriculaBuffer(&partidas[idPartida].tablero1, buffer);
                                         send(partidas[idPartida].socket1, buffer, sizeof(buffer), 0);
 
                                         bzero(buffer, sizeof(buffer));
-                                        imprimirCuadriculaBuffer(&partidas[idPartida].tablero2, buffer);
+                                        strcpy(buffer, cadenaBarcos2);
+                                        //imprimirCuadriculaBuffer(&partidas[idPartida].tablero2, buffer);
                                         send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
+                                        
+                                        //Imprimo las cuadriculas en el servidor
+                                        // imprimirCuadricula(&partidas[idPartida].tablero1);
+                                        // imprimirCuadricula(&partidas[idPartida].tablero2);
 
                                         bzero(buffer, sizeof(buffer));
                                         strcpy(buffer, "+ok, es tu turno\n");
@@ -369,6 +378,43 @@ int main()
                                     send(i, buffer, sizeof(buffer), 0);
                                 }
                             }
+
+                            //Registrar usuario
+                            else if (strncmp(buffer, "REGISTRO", 8) == 0)
+                            {
+                                char usuario[20];
+                                char password[20];
+                                printf("El usuario con socket %d ha introducido la orden REGISTRO\n", i);
+                                //Registro -u juan -p 1234
+                                if(sscanf(buffer, "REGISTRO -u %s -p %s", usuario, password) == 2)
+                                {
+                                    // Compruebo si el usuario ya existe
+                                    bool existe = existeUsuario(usuario);
+
+                                    if (existe)
+                                    {
+                                        bzero(buffer, sizeof(buffer));
+                                        sprintf(buffer, "-Err: El usuario ya existe\n");
+                                        send(i, buffer, sizeof(buffer), 0);
+                                    }
+                                    else
+                                    {
+                                        // Guardo el usuario en el fichero
+                                        guardarUsuario(usuario, password);
+
+                                        bzero(buffer, sizeof(buffer));
+                                        sprintf(buffer, "+Ok! Usuario registrado correctamente\n");
+                                        send(i, buffer, sizeof(buffer), 0);
+                                    }
+                                }
+                                else
+                                {
+                                    bzero(buffer, sizeof(buffer));
+                                    sprintf(buffer, "-Err: Formato del mensaje de registro incorrecto\n");
+                                    send(i, buffer, sizeof(buffer), 0);
+                                }
+                            }
+                            
                             // Poner nombre de usuario
                             else if (strncmp(buffer, "USUARIO", 7) == 0)
                             {

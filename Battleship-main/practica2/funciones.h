@@ -43,15 +43,17 @@
 
 
 // Estructura para representar una cuadrícula
-typedef struct Cuadricula{
+typedef struct {
     char tablero[FILAS][COLUMNAS];
+    int idBarco[FILAS][COLUMNAS];
 } Cuadricula;
 
 // Estructura para representar un barco
-typedef struct Barco{
+typedef struct {
     int tamano;
     char simbolo;
-    int salud; // Nueva propiedad para rastrear la salud del barco
+    int salud; // Nueva propiedad para rastrear la salud del barco   
+    int idBarco;                                                                                                                                                                                                                                                                                                                                                                                              
 } Barco;
 
 // Estructura para representar las estadísticas de un jugador
@@ -82,8 +84,10 @@ struct partida
     int turno;
     int disparos1;
     int disparos2;
-    Cuadricula tablero1;
-    Cuadricula tablero2;
+    Cuadricula tableroBarcos1;
+    Cuadricula tableroBarcos2;
+    Cuadricula tableroDisparos1;
+    Cuadricula tableroDisparos2;
 };
 
 
@@ -97,7 +101,7 @@ bool passwordCorrecta(char *usuario, char *password);
 // Funcion que comprueba si se repite un usuario
 bool comprobar_usuario(struct jugador *jugadores, int tam, int socket, char *nombre);
 
-// bool registrarUsuario(char * usuario, char * password);
+void guardarUsuario(char * usuario, char * password);
 
 //-------------Funciones partidas------------------
 //
@@ -114,6 +118,29 @@ int buscarPartida(struct jugador *user, struct partida *partidas, int numPartida
 
 void actualizarEstado_partida(struct partida *partidas, struct jugador *jugadores, int tam);
 
+void imprimirPartidas(struct partida *partidas, int tam);
+
+void imprimirCuadricula(Cuadricula *cuadricula);
+
+int buscarIDPartida(struct partida * partidas, int tam, int socket_a_buscar);
+
+int colocarBarco(Cuadricula* cuadricula, Barco* barco);
+
+int esEspacioDisponible(Cuadricula* cuadricula, int fila, int columna, int orientacion, int tamano);
+
+//void imprimirCuadricula(Cuadricula* cuadricula);
+
+void inicializarCuadricula(Cuadricula* cuadricula);
+
+void imprimirCuadriculaBuffer(Cuadricula* cuadricula, char * buffer);
+
+char* matrizBarcosToString(Cuadricula* cuadricula);
+
+char* matrizDisparosToString(Cuadricula* cuadricula);
+
+void stringBarcosToMatriz(char *cadena,Cuadricula *cuadricula);
+
+void stringDisparosToMatriz(char *cadena,Cuadricula *cuadricula);
 // void rellenar_datos_partidas(struct partida * partidas, struct jugador * jugadores, int pos1, int pos2, int num_partida);
 
 //-------------Funciones de servidor----------------
@@ -128,21 +155,9 @@ int buscarSocketDisponible(struct jugador *jugadores, int tam, int pos);
 
 void imprimirJugadores(struct jugador *jugadores, int tam);
 
-void imprimirPartidas(struct partida *partidas, int tam);
 
-void imprimirCuadricula(Cuadricula *cuadricula);
 
-int buscarIDPartida(struct partida * partidas, int tam, int socket_a_buscar);
 
-int colocarBarco(Cuadricula* cuadricula, Barco* barco);
-
-int esEspacioDisponible(Cuadricula* cuadricula, int fila, int columna, int orientacion, int tamano);
-
-void imprimirCuadricula(Cuadricula* cuadricula);
-
-void inicializarCuadricula(Cuadricula* cuadricula);
-
-void imprimirCuadriculaBuffer(Cuadricula* cuadricula, char * buffer);
 
 // Hacer una funcion de buscar usuario
 
