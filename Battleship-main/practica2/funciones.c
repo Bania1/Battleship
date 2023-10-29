@@ -69,7 +69,7 @@ bool comprobar_usuario(struct jugador *jugadores, int tam, int socket, char *nom
     // int cont=0;
     for (int i = 0; i < tam; i++)
     {
-        if (jugadores[i].estado == LOGUEADO && (strcmp(jugadores[i].nombre_user, nombre) == 0))
+        if ((jugadores[i].estado == LOGUEADO || jugadores[i].estado == JUGANDO || jugadores[i].estado == ESPERANDO) && (strcmp(jugadores[i].nombre_user, nombre) == 0))
         {
             // cont++;
             return true;
@@ -375,6 +375,15 @@ void mostrarMenuBienvenida() {
 
 // Función para inicializar una cuadrícula con agua (~)
 void inicializarCuadricula(Cuadricula* cuadricula) {
+
+    /*for (int i = 0; i < FILAS; i++) {
+        for (int j = 0; j < COLUMNAS; j++) {
+            cuadricula->tablero[i][j] = (char*)malloc(sizeof(char));
+            cuadricula->idBarco[i][j] = (int*)malloc(sizeof(int));
+        }
+    }*/
+    cuadricula = (Cuadricula *)malloc(sizeof(Cuadricula));
+
     for (int i = 0; i < FILAS; i++) {
         for (int j = 0; j < COLUMNAS; j++) {
             cuadricula->tablero[i][j] = '~';
@@ -428,7 +437,7 @@ int esEspacioDisponible(Cuadricula* cuadricula, int fila, int columna, int orien
 }
 
 // Función para colocar un barco en una cuadricula
-int colocarBarco(Cuadricula* cuadricula, Barco* barco) {
+void colocarBarco(Cuadricula* cuadricula, Barco* barco) {
     int fila, columna, orientacion;
 
     // Generar coordenadas aleatorias y orientación
@@ -454,7 +463,7 @@ int colocarBarco(Cuadricula* cuadricula, Barco* barco) {
     // Inicializar la salud del barco
     barco->salud = barco->tamano;
 
-    return 1; // Barco colocado con éxito
+    //return 1; // Barco colocado con éxito
 }
 
 int disparar(Cuadricula* cuadricula_disparo, Cuadricula* cuadricula_barco, Barco barcos[], char* coordenadas) {
@@ -651,7 +660,6 @@ char* matrizDisparosToString(Cuadricula* cuadricula)
 void stringBarcosToMatriz(char *cadena,Cuadricula *cuadricula)
 {
     int cont = 0;
-
     for(int i = 0; i < FILAS; i++)
     {
         for(int j = 0; j < COLUMNAS; j++)
@@ -666,7 +674,7 @@ void stringBarcosToMatriz(char *cadena,Cuadricula *cuadricula)
             }
             else
             {
-                exit(1);
+                //exit(1);
             }
             cont++;
         }

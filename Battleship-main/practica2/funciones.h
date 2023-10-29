@@ -34,7 +34,7 @@
 #define COMPLETA 10 // partida completa
 
 // Mensajes y tamaños
-#define MSG_SIZE 250
+#define MSG_SIZE 500
 #define MAX_CLIENTS 30
 #define MAX_MATCHES 10
 
@@ -124,7 +124,7 @@ void imprimirCuadricula(Cuadricula *cuadricula);
 
 int buscarIDPartida(struct partida * partidas, int tam, int socket_a_buscar);
 
-int colocarBarco(Cuadricula* cuadricula, Barco* barco);
+void colocarBarco(Cuadricula* cuadricula, Barco* barco);
 
 int esEspacioDisponible(Cuadricula* cuadricula, int fila, int columna, int orientacion, int tamano);
 
@@ -162,6 +162,8 @@ int disparar(Cuadricula* cuadricula_disparo, Cuadricula* cuadricula_barco, Barco
 void mostrarEstadisticas(EstadisticasJugador jugador1, EstadisticasJugador jugador2);
 
 bool comprobarGanador(Cuadricula* cuadricula_barco,Barco barcos[]);
+
+//Cuadricula *reservarCuadricula();
 
 
 

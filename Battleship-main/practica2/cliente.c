@@ -20,7 +20,7 @@ int main()
 	-----------------------------------------------------*/
 	int sd;
 	struct sockaddr_in sockname;
-	char buffer[250];
+	char buffer[MSG_SIZE];
 	socklen_t len_sockname;
 	fd_set readfds, auxfds;
 	int salida;
@@ -62,6 +62,9 @@ int main()
 	FD_SET(0, &readfds);
 	FD_SET(sd, &readfds);
 
+	Cuadricula *tableroBarcos;
+	inicializarCuadricula(tableroBarcos);
+
 	/* ------------------------------------------------------------------
 		Se transmite la información
 	-------------------------------------------------------------------*/
@@ -76,26 +79,52 @@ int main()
 
 			bzero(buffer, sizeof(buffer));
 			recv(sd, buffer, sizeof(buffer), 0);
+			
+			char buffer_copia[sizeof(buffer)];
+			//char buffer_copia2[sizeof(buffer)];
+    		strcpy(buffer_copia, buffer); 
+			//strcpy(buffer_copia2, buffer); 
 
-			printf("\n%s\n", buffer);
+			char * token = strtok(buffer_copia," ");
+			//char * token2 = strtok(buffer_copia2,";");
 
 			if (strcmp(buffer, "Demasiados clientes conectados\n") == 0)
+			{
+				printf("\n%s\n", buffer);
 				fin = 1;
+			}
+			else if (strcmp(buffer, "Desconexión servidor\n") == 0)
+			{
+				printf("\n%s\n", buffer);
+				fin = 1;
+			}
+			else if (strcmp(token, "+Ok. Empezamos partida\n") == 0)
+			{
+				printf("\n%s\n", buffer);
+				bzero(buffer, sizeof(buffer));
+				recv(sd, buffer, sizeof(buffer), 0);
+				printf("\n%s\n", buffer);
 
-			if (strcmp(buffer, "Desconexión servidor\n") == 0)
-				fin = 1;
+				stringBarcosToMatriz(buffer,tableroBarcos);
+				imprimirCuadricula(tableroBarcos);
+			}
+			else if(strcmp(token,"+Ok.")==0)
+			{
+				printf("\n%s\n", buffer);
+			}
+			else if(strcmp(token,"-Err:")==0)
+			{
+				printf("\n%s\n", buffer);
+			}
 			
-			bzero(buffer, sizeof(buffer));
+			//bzero(buffer, sizeof(buffer));
 			//printf("Mensaje del servidor: %s\n", buffer);
 			// bzero(buffer, sizeof(buffer));
-			// char * token = strtok(buffer, " ");
-			// recv(sd, buffer, sizeof(buffer), 0);
+			//char * token = strtok(buffer, " ");
+			//recv(sd, buffer, sizeof(buffer), 0);
 
 			//Creacion del tablero
-			// Cuadricula *tableroBarcos;
-			// stringBarcosToMatriz(buffer, tableroBarcos);
-
-			// imprimirCuadricula(tableroBarcos);
+			//read ( sd, buffer, sizeof(buffer));
 			
 		}
 		else
