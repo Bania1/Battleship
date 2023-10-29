@@ -340,11 +340,45 @@ int buscarIDPartida(struct partida *partidas, int tam, int socket_a_buscar)
     return -1;
 }
 
+void imprimirCuadriculaBuffer(Cuadricula* cuadricula, char * buffer) {
+    // Inicializa el búfer como una cadena vacía
+    buffer[0] = '\0';
+
+    // Agrega la primera fila con letras de columna al búfer
+    //strcat(buffer, "   A B C D E F G H I J\n");
+
+    for (int i = 0; i < FILAS; i++) {
+        //char fila[4];
+        //snprintf(fila, sizeof(fila), "%2d ", i + 1);
+        //strcat(buffer, fila);
+
+        for (int j = 0; j < COLUMNAS; j++) {
+            char celda[4];
+            snprintf(celda, sizeof(celda), "%c ", cuadricula->tablero[i][j]);
+            strcat(buffer, celda);
+        }
+
+        strcat(buffer, ";");
+    }
+}
+
+//funciones del tablero
+// Función para mostrar el menú de bienvenida
+void mostrarMenuBienvenida() {
+    printf("\n=============================");
+    printf("\n        Batalla Naval\n");
+    printf("=============================\n");
+    printf("\n1. Jugar\n");
+    printf("2. Salir\n");
+    printf("\nElija una opción: ");
+}
+
 // Función para inicializar una cuadrícula con agua (~)
 void inicializarCuadricula(Cuadricula* cuadricula) {
     for (int i = 0; i < FILAS; i++) {
         for (int j = 0; j < COLUMNAS; j++) {
             cuadricula->tablero[i][j] = '~';
+            cuadricula->idBarco[i][j] = -1;
         }
     }
 }
@@ -423,33 +457,125 @@ int colocarBarco(Cuadricula* cuadricula, Barco* barco) {
     return 1; // Barco colocado con éxito
 }
 
+int disparar(Cuadricula* cuadricula_disparo, Cuadricula* cuadricula_barco, Barco barcos[], char* coordenadas) {
+    int fila, columna;
 
-void imprimirCuadriculaBuffer(Cuadricula* cuadricula, char * buffer) {
-    // Inicializa el búfer como una cadena vacía
-    buffer[0] = '\0';
-
-    // Agrega la primera fila con letras de columna al búfer
-    //strcat(buffer, "   A B C D E F G H I J\n");
-
-    for (int i = 0; i < FILAS; i++) {
-        //char fila[4];
-        //snprintf(fila, sizeof(fila), "%2d ", i + 1);
-        //strcat(buffer, fila);
-
-        for (int j = 0; j < COLUMNAS; j++) {
-            char celda[4];
-            snprintf(celda, sizeof(celda), "%c ", cuadricula->tablero[i][j]);
-            strcat(buffer, celda);
+    if (strlen(coordenadas) == 2 || (strlen(coordenadas) == 3 && coordenadas[2] == '0')) {
+        if (coordenadas[0] >= 'A' && coordenadas[0] <= 'J') {
+            if (coordenadas[1] >= '1' && ((coordenadas[2] == '\0') || (coordenadas[1] == '1' && coordenadas[2] == '0'))) {
+                fila = (coordenadas[1] == '1' && coordenadas[2] == '0') ? 9 : coordenadas[1] - '1';
+                columna = coordenadas[0] - 'A';
+            } else {
+                printf("Coordenadas no válidas. Inténtalo de nuevo.\n");
+                return -1; // Indicar que las coordenadas no son válidas
+            }
+        } else {
+            printf("Coordenadas no válidas. Inténtalo de nuevo.\n");
+            return -1; // Indicar que las coordenadas no son válidas
         }
+    } else {
+        printf("Coordenadas no válidas. Inténtalo de nuevo.lele\n");
+        return -1; // Indicar que las coordenadas no son válidas
+    }
 
-        strcat(buffer, ";");
+    if (cuadricula_disparo->tablero[fila][columna] == 'X' ||
+        cuadricula_disparo->tablero[fila][columna] == 'F' ||
+        cuadricula_disparo->tablero[fila][columna] == 'O') {
+        printf("Ya has disparado en esas coordenadas. Inténtalo de nuevo.\n");
+        return -1; // Ya se disparó en esta ubicación
+    }
+
+    if (cuadricula_barco->tablero[fila][columna] == 'B') {
+        cuadricula_disparo->tablero[fila][columna] = 'X'; // Disparo acertado
+        cuadricula_barco->tablero[fila][columna] = 'O';    // Barco golpeado
+
+        // Reducir la salud del barco golpeado
+        
+        /*for(int j = 0; j < FILAS; j++){
+            for(int k = 0; k < COLUMNAS; k++){
+                for (int i = 0; i < 5; i++) {
+                    if(cuadricula_barco->tablero[j][k] == cuadricula_barco->tablero[fila][columna] && cuadricula_barco->idBarco[j][k]==barcos[i].idBarco){
+                        cuadricula_barco->idBarco[j][k]+=10;
+                        barcos[i].salud--;
+                        printf("id:%d  salud:%d\n",barcos[i].idBarco,barcos[i].salud);
+                        if (barcos[i].salud == 0) {
+                            printf("¡Barco hundido! Coordenadas: %c%d\n", coordenadas[0], fila + 1);
+                            break;
+                        }
+                        break;
+                    }
+                }
+            }
+            
+            // if (barcos[i].simbolo == 'B') {
+            //     barcos[i].salud--;
+            //     if (barcos[i].salud == 0) {
+            //         printf("¡Barco hundido! Coordenadas: %c%d\n", coordenadas[0], fila + 1);
+            //     }
+            // }
+        }*/
+
+        int posBarco=cuadricula_barco->idBarco[fila][columna];
+        barcos[posBarco].salud--;
+        //printf("id:%d  salud:%d\n",barcos[posBarco].idBarco,barcos[posBarco].salud);
+        if (barcos[posBarco].salud == 0) 
+        {
+            printf("¡Barco hundido! Coordenadas: %c%d\n", coordenadas[0], fila + 1);
+        }
+        return 1;
+    } else {
+        cuadricula_disparo->tablero[fila][columna] = 'F'; // Disparo fallido
+        return 0;
+    }
+}
+
+// Función para mostrar las estadísticas de los jugadores
+void mostrarEstadisticas(EstadisticasJugador jugador1, EstadisticasJugador jugador2) {
+    printf("\nEstadísticas del Jugador 1:\n");
+    printf("Disparos totales: %d\n", jugador1.disparos_totales);
+    printf("Disparos acertados: %d\n", jugador1.aciertos);
+    printf("Disparos fallidos: %d\n", jugador1.fallos);
+
+    printf("\nEstadísticas del Jugador 2:\n");
+    printf("Disparos totales: %d\n", jugador2.disparos_totales);
+    printf("Disparos acertados: %d\n", jugador2.aciertos);
+    printf("Disparos fallidos: %d\n", jugador2.fallos);
+}
+
+bool comprobarGanador(Cuadricula* cuadricula_barco,Barco barcos[]){
+    
+    //numero total de casillas ocupadas por barcos
+    int total = 0;
+    for(int i=0;i<5;i++)
+    {
+        total += barcos[i].tamano;
+    }
+
+    for(int i=0;i<FILAS;i++)
+    {
+        for(int j=0;j<COLUMNAS;j++)
+        {
+            if(cuadricula_barco->tablero[i][j] == 'O')
+            {
+                total--;
+            }
+        }
+    }
+
+    if(total == 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
 char* matrizBarcosToString(Cuadricula* cuadricula)
 {
-    char *cadena = malloc(MSG_SIZE * sizeof(char)); // Asigna memoria dinámica
-
+    //char cadena[1000] = "";
+    char *cadena = malloc(1000 * sizeof(char)); // Asigna memoria dinámica
     if (cadena == NULL) {
         // Manejo de error si malloc falla
         exit(1); // o devuelve NULL o haz lo que sea apropiado en tu aplicación
@@ -487,8 +613,7 @@ char* matrizBarcosToString(Cuadricula* cuadricula)
 char* matrizDisparosToString(Cuadricula* cuadricula)
 {
     //char cadena[1000] = "";
-    char *cadena = malloc(MSG_SIZE * sizeof(char)); // Asigna memoria dinámica
-
+    char *cadena = malloc(1000 * sizeof(char)); // Asigna memoria dinámica
     if (cadena == NULL) {
         // Manejo de error si malloc falla
         exit(1); // o devuelve NULL o haz lo que sea apropiado en tu aplicación
@@ -580,4 +705,3 @@ void stringDisparosToMatriz(char *cadena,Cuadricula *cuadricula)
         cont++;
     }
 }
-

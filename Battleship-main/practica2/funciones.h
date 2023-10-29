@@ -155,6 +155,14 @@ int buscarSocketDisponible(struct jugador *jugadores, int tam, int pos);
 
 void imprimirJugadores(struct jugador *jugadores, int tam);
 
+void mostrarMenuBienvenida();
+
+int disparar(Cuadricula* cuadricula_disparo, Cuadricula* cuadricula_barco, Barco barcos[], char* coordenadas);
+
+void mostrarEstadisticas(EstadisticasJugador jugador1, EstadisticasJugador jugador2);
+
+bool comprobarGanador(Cuadricula* cuadricula_barco,Barco barcos[]);
+
 
 
 
