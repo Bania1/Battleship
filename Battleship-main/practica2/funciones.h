@@ -34,7 +34,7 @@
 #define COMPLETA 10 // partida completa
 
 // Mensajes y tamaños
-#define MSG_SIZE 500
+#define MSG_SIZE 250
 #define MAX_CLIENTS 30
 #define MAX_MATCHES 10
 

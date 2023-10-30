@@ -101,6 +101,9 @@ int main()
     // Capturamos la señal SIGINT (Ctrl+c)
     signal(SIGINT, manejador);
 
+    Barco barcos1[] = {{4, 'B', 0, 0}, {3, 'B', 0, 1}, {3, 'B', 0, 2}, {2, 'B', 0, 3}, {2, 'B', 0, 4}};
+    Barco barcos2[] = {{4, 'B', 0, 0}, {3, 'B', 0, 1}, {3, 'B', 0, 2}, {2, 'B', 0, 3}, {2, 'B', 0, 4}};
+
     /*-----------------------------------------------------------------------
         El servidor acepta una petición
     ------------------------------------------------------------------------ */
@@ -139,13 +142,13 @@ int main()
                                 FD_SET(new_sd, &readfds);
                                 strcpy(buffer, "+Ok. Usuario conectado\n");
                                 send(new_sd, buffer, sizeof(buffer), 0);
-                                //for (j = 0; j < (numClientes - 1); j++)
+                                // for (j = 0; j < (numClientes - 1); j++)
                                 //{
                                 //
-                                //    bzero(buffer, sizeof(buffer));
-                                //    sprintf(buffer, "Nuevo Cliente conectado en <%d>", new_sd);
-                                //    send(arrayClientes[j], buffer, sizeof(buffer), 0);
-                                //}
+                                //     bzero(buffer, sizeof(buffer));
+                                //     sprintf(buffer, "Nuevo Cliente conectado en <%d>", new_sd);
+                                //     send(arrayClientes[j], buffer, sizeof(buffer), 0);
+                                // }
 
                                 // Aquí viene mi código (ojo, aquí socket es new_sd)
 
@@ -207,18 +210,19 @@ int main()
 
                                 if (jugadores[pos].estado == NO_CONECTADO || jugadores[pos].estado == CONECTADO || jugadores[pos].estado == USUARIO_ENCONTRADO)
                                 {
-                                    // Le envío al jugador que no puede jugar
-                                    bzero(buffer, sizeof(buffer));
-                                    sprintf(buffer, "-Err: Debes estas LOGUEADO para poder INICIAR-PARTIDA\n");
-                                    send(i, buffer, sizeof(buffer), 0);
+                                     // Le envío al jugador que no puede jugar
+                                     bzero(buffer, sizeof(buffer));
+                                     sprintf(buffer, "-Err: Debes estas LOGUEADO para poder INICIAR-PARTIDA\n");
+                                     send(i, buffer, sizeof(buffer), 0);
                                 }
-                                else if (jugadores[pos].estado == ESPERANDO || jugadores[pos].estado == JUGANDO)
+                                 else if (jugadores[pos].estado == ESPERANDO || jugadores[pos].estado == JUGANDO)
                                 {
-                                    // Le envío al jugador que no puede jugar
-                                    bzero(buffer, sizeof(buffer));
-                                    sprintf(buffer, "-Err: ya estás en una partida\n");
-                                    send(i, buffer, sizeof(buffer), 0);
+                                     // Le envío al jugador que no puede jugar
+                                     bzero(buffer, sizeof(buffer));
+                                     sprintf(buffer, "-Err: ya estás en una partida\n");
+                                     send(i, buffer, sizeof(buffer), 0);
                                 }
+                            
                                 else
                                 {
                                     // Funcion que busca una partdia libre (primero con uno que ya está esperando y segundo con una vacía)
@@ -269,7 +273,8 @@ int main()
                                         bzero(buffer, sizeof(buffer));
                                         sprintf(buffer, "+Ok. Empezamos partida\n");
                                         send(jugadores[pos2].socket, buffer, sizeof(buffer), 0);
-                                        printf("hola1\n");
+
+                                        bzero(buffer, sizeof(buffer));
 
                                         // Actualizo el estado del jugador
                                         jugadores[pos1].estado = JUGANDO; // jugador 1
@@ -282,58 +287,61 @@ int main()
                                         partidas[idPartida].disparos1 = 0;
                                         partidas[idPartida].disparos2 = 0;
                                         partidas[idPartida].turno = 1; // le toca al jugador 1, si vale 2 le toca al 2
-                                        printf("hola2\n");
+
                                         // Creo los tableros
                                         //  Crear los barcos, cuadrículas y jugar
-                                        Barco barcos1[] = {{4, 'B', 0,0}, {3, 'B', 0,1}, {3, 'B', 0,2}, {2, 'B', 0,3}, {2, 'B', 0,4}};
-                                        Barco barcos2[] = {{4, 'B', 0,0}, {3, 'B', 0,1}, {3, 'B', 0,2}, {2, 'B', 0,3}, {2, 'B', 0,4}};
+                                        //Barco barcos1[] = {{4, 'B', 0, 0}, {3, 'B', 0, 1}, {3, 'B', 0, 2}, {2, 'B', 0, 3}, {2, 'B', 0, 4}};
+                                        //Barco barcos2[] = {{4, 'B', 0, 0}, {3, 'B', 0, 1}, {3, 'B', 0, 2}, {2, 'B', 0, 3}, {2, 'B', 0, 4}};
+
+                                        for(int m=0;m<FILAS;m++)
+                                        {
+                                            for(int n=0;n<COLUMNAS;n++)
+                                            {
+                                                partidas[idPartida].tableroBarcos1.tablero[m][n] = " ";
+                                                partidas[idPartida].tableroBarcos2.tablero[m][n] = " ";
+
+                                            }
+                                        }
 
                                         inicializarCuadricula(&partidas[idPartida].tableroBarcos1);
                                         inicializarCuadricula(&partidas[idPartida].tableroBarcos2);
-                                        printf("hola3\n");
+                                        // imprimirCuadricula(&partidas[idPartida].tableroBarcos1);
+                                        // imprimirCuadricula(&partidas[idPartida].tableroBarcos2);
 
                                         // Colocar los barcos en las cuadrículas
-                                        //mostrar partidas
-                                        for(int z=0;z<MAX_MATCHES;z++){
-                                            printf("id partida %d\n", idPartida);
-                                            printf("partida %d con jugador 1: %d y jugador 2: %d \n", z, partidas[z].socket1, partidas[z].socket2);
-                                        }
-                                        for (int i = 0; i < 5; i++)
-                                        {
-                                            printf("hola3.0\n");
-                                            colocarBarco(&partidas[idPartida].tableroBarcos1, &barcos1[i]);
-                                            printf("hola3.1\n");
-                                            colocarBarco(&partidas[idPartida].tableroBarcos2, &barcos2[i]);
-                                            printf("hola3.2\n");
-                                        }
-                                        printf("hola4\n");
+                                        // mostrar partidas
+                                        // for(int z=0;z<MAX_MATCHES;z++){
+                                        //    printf("id partida %d\n", idPartida);
+                                        //    printf("partida %d con jugador 1: %d y jugador 2: %d \n", z, partidas[z].socket1, partidas[z].socket2);
+                                        //}
 
-                                        //Funcion que convierta una matriz en cadena de caracteres
-                                        // A,A,A,A,B,B;A,A,A,B,B,B,B;
-                                        bzero(buffer, sizeof(buffer));
+                                        for (int h = 0; h < 5; h++)
+                                        {
+                                            colocarBarco(&partidas[idPartida].tableroBarcos1, &barcos1[h]);
+                                            colocarBarco(&partidas[idPartida].tableroBarcos2, &barcos2[h]);
+                                        }
+
+                                        // Funcion que convierta una matriz en cadena de caracteres
+                                        //  A,A,A,A,B,B;A,A,A,B,B,B,B;
+                                        //bzero(buffer, sizeof(buffer));
                                         char *cadenaBarcos1 = matrizBarcosToString(&partidas[idPartida].tableroBarcos1);
                                         char *cadenaBarcos2 = matrizBarcosToString(&partidas[idPartida].tableroBarcos2);
+                                        printf("cadena barcos 1: %s\n", cadenaBarcos1);
+                                        printf("cadena barcos 2: %s\n", cadenaBarcos2);
 
                                         // Envio los tableros a cada jugador
                                         bzero(buffer, sizeof(buffer));
                                         strcpy(buffer, cadenaBarcos1);
-                                        printf("%s\n",cadenaBarcos1);
-                                        printf("hola5\n");
-                                        //imprimirCuadriculaBuffer(&partidas[idPartida].tablero1, buffer);
                                         send(partidas[idPartida].socket1, buffer, sizeof(buffer), 0);
-                                        //write ( partidas[idPartida].socket1, buffer, sizeof(buffer));
+                                        
 
                                         bzero(buffer, sizeof(buffer));
                                         strcpy(buffer, cadenaBarcos2);
-                                        printf("%s\n",cadenaBarcos2);
-                                        printf("hola6\n");
-                                        //imprimirCuadriculaBuffer(&partidas[idPartida].tablero2, buffer);
                                         send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
-                                        //write ( partidas[idPartida].socket1, buffer, sizeof(buffer));
-                                        
-                                        //Imprimo las cuadriculas en el servidor
-                                        // imprimirCuadricula(&partidas[idPartida].tablero1);
-                                        // imprimirCuadricula(&partidas[idPartida].tablero2);
+
+                                        // Imprimo las cuadriculas en el servidor
+                                        imprimirCuadricula(&partidas[idPartida].tableroBarcos1);
+                                        imprimirCuadricula(&partidas[idPartida].tableroBarcos2);
 
                                         bzero(buffer, sizeof(buffer));
                                         strcpy(buffer, "+Ok. es tu turno\n");
@@ -341,9 +349,8 @@ int main()
 
                                         bzero(buffer, sizeof(buffer));
                                         strcpy(buffer, "+Ok. es turno del contrincante\n");
-                                        send(partidas[idPartida].socket2, buffer, MSG_SIZE, 0);
+                                        send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
 
-                                        
                                         // Imprimo los vectores de jugadores para probar
                                         // printf("\npartida %d con jugador 1: %d y jugador 2: %d \n\n", numPartidas, partidas[numPartidas].socket1, partidas[numPartidas].socket2);
                                         // imprimirJugadores(jugadores, MAX_CLIENTS);
@@ -366,14 +373,86 @@ int main()
                                 if (sscanf(buffer, "DISPARO %c,%d", &col, &fil) == 2)
                                 {
                                     // Compruebo el estado del jugador que está disparando
-                                    if (1) // cambiar 1 por la funcionalidd que hagas
+                                    int pos = buscarSocket(jugadores, MAX_CLIENTS, i);
+
+                                    //Concateno la columna y la fila
+                                    char disparo[3];
+                                    sprintf(disparo, "%c%d", col, fil);
+                                    
+                                    if (jugadores[pos].estado == JUGANDO) // cambiar 1 por la funcionalidd que hagas
                                     {
+                                        // Busco la partida
+                                        int idPartida = buscarIDPartida(partidas, MAX_MATCHES, i);
+
                                         // Compruebo el turno
-                                        if (1)
+                                        if (partidas[idPartida].turno == 1)
                                         {
-                                            //Aquí va toda la funcionalidad del disparo. Sería coger
-                                            //de vuestro tablero.c y adaptarlo al juego tal y como he hecho
-                                            //en la parte de iniciar partida
+                                            //Dispara el jugador 1
+                                            partidas[idPartida].disparos1 = disparar(&partidas[idPartida].tableroDisparos1,   // tablero de disparos del jugador 1
+                                                                   &partidas[idPartida].tableroBarcos2,     // tablero de barcos del jugador 2
+                                                                   barcos2,                                  // barcos del jugador 2
+                                                                   disparo);                                // disparo del jugador 1
+
+                                            // Compruebo si el disparo ha sido agua o barco
+                                            if (partidas[idPartida].disparos1 == 0)
+                                            {
+                                                // Le envío al jugador 1 que ha sido agua
+                                                bzero(buffer, sizeof(buffer));
+                                                sprintf(buffer, "+Ok. Agua en %s\n", disparo);
+                                                send(i, buffer, sizeof(buffer), 0);
+
+                                                // Le envío al jugador 2 que ha sido agua
+                                                bzero(buffer, sizeof(buffer));
+                                                sprintf(buffer, "+Ok. Agua en %s\n", disparo);
+                                                send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
+
+                                                // Le envío al jugador 1 que es el turno del contrincante
+                                                bzero(buffer, sizeof(buffer));
+                                                sprintf(buffer, "+Ok. es turno del contrincante\n");
+                                                send(i, buffer, sizeof(buffer), 0);
+
+                                                // Le envío al jugador 2 que es su turno
+                                                bzero(buffer, sizeof(buffer));
+                                                sprintf(buffer, "+Ok. es tu turno\n");
+                                                send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
+
+                                                // Cambio el turno
+                                                partidas[idPartida].turno = 2;
+                                            }
+                                            else if (partidas[idPartida].disparos1 == 1)
+                                            {
+                                                // Le envío al jugador 1 que ha sido tocado
+                                                bzero(buffer, sizeof(buffer));
+                                                sprintf(buffer, "+Ok. Barco tocado en %s\n", disparo);
+                                                send(i, buffer, sizeof(buffer), 0);
+
+                                                // Le envío al jugador 2 que ha sido tocado
+                                                bzero(buffer, sizeof(buffer));
+                                                sprintf(buffer, "+Ok. Barco tocado en %s\n", disparo);
+                                                send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
+
+                                                // Le envío al jugador 1 que es el turno del contrincante
+                                                bzero(buffer, sizeof(buffer));
+                                                sprintf(buffer, "+Ok. es turno del contrincante\n");
+                                                send(i, buffer, sizeof(buffer), 0);
+
+                                                // Le envío al jugador 2 que es su turno
+                                                bzero(buffer, sizeof(buffer));
+                                                sprintf(buffer, "+Ok. es tu turno\n");
+                                                send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
+
+                                                // Sigue el turno del jugador 1
+                                            }
+                                            //else if (partidas[idPartida
+                                        }
+                                        else if (1)    
+                                        {
+                                            // Aquí va toda la funcionalidad del disparo. Sería coger
+                                            // de vuestro tablero.c y adaptarlo al juego tal y como he hecho
+                                            // en la parte de iniciar partida
+                                            
+
+                                            
                                         }
                                         else
                                         {
@@ -397,7 +476,7 @@ int main()
                                 }
                             }
 
-                            //Registrar usuario
+                            // Registrar usuario
                             else if (strncmp(buffer, "REGISTRO", 8) == 0)
                             {
                                 char usuario[20];
@@ -432,7 +511,7 @@ int main()
                                     send(i, buffer, sizeof(buffer), 0);
                                 }
                             }
-                            
+
                             // Poner nombre de usuario
                             else if (strncmp(buffer, "USUARIO", 7) == 0)
                             {
@@ -457,7 +536,6 @@ int main()
                                 {
                                     // cambia el estado del jugador a USUARIO_ENCONTRADO
                                     jugadores[pos].estado = USUARIO_ENCONTRADO;
-                                    // jugadores[i].estado = USUARIO_ENCONTRADO;
 
                                     // Guardo el nombre del usuario en el vector de jugadores
                                     strcpy(jugadores[pos].nombre_user, nombre);
@@ -472,6 +550,7 @@ int main()
                                     sprintf(buffer, "-Err: El usuario no existe\n");
                                     send(i, buffer, sizeof(buffer), 0);
                                 }
+                                bzero(buffer, sizeof(buffer));
                             }
 
                             // Poner contraseña
@@ -510,6 +589,7 @@ int main()
                                         send(i, buffer, sizeof(buffer), 0);
                                     }
                                 }
+                                bzero(buffer, sizeof(buffer));
                             }
                             else
                             {

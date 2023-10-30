@@ -295,26 +295,6 @@ void imprimirJugadores(struct jugador *jugadores, int tam)
         printf("Socket: %d\n", jugadores[i].socket);
         printf("Estado: %d\n", jugadores[i].estado);
         printf("Nombre: %s\n", jugadores[i].nombre_user);
-        /*printf("Password: %s\n", jugadores[i].password);
-        printf("Puntuacion: %d\n", jugadores[i].puntuacion);
-        printf("Partidas ganadas: %d\n", jugadores[i].partidas_ganadas);
-        printf("Partidas perdidas: %d\n", jugadores[i].partidas_perdidas);
-        printf("Partidas empatadas: %d\n", jugadores[i].partidas_empatadas);
-        printf("Partidas abandonadas: %d\n", jugadores[i].partidas_abandonadas);
-        printf("Partidas jugadas: %d\n", jugadores[i].partidas_jugadas);
-        printf("Partidas en curso: %d\n", jugadores[i].partidas_en_curso);
-        printf("Partidas en espera: %d\n", jugadores[i].partidas_en_espera);
-        printf("Partidas en finalizadas: %d\n", jugadores[i].partidas_finalizadas);
-        printf("Partidas en no conectado: %d\n", jugadores[i].partidas_no_conectado);
-        printf("Partidas en logueado: %d\n", jugadores[i].partidas_logueado);
-        printf("Partidas en conectado: %d\n", jugadores[i].partidas_conectado);
-        printf("Partidas en iniciada: %d\n", jugadores[i].partidas_iniciada);
-        printf("Partidas en semillena: %d\n", jugadores[i].partidas_semillena);
-        printf("Partidas en vacia: %d\n", jugadores[i].partidas_vacia);
-        printf("Partidas en esperando: %d\n", jugadores[i].partidas_esperando);
-        printf("Partidas en abandonado: %d\n", jugadores[i].partidas_abandonado);
-        printf("Partidas en finalizada: %d\n", jugadores[i].partidas_finalizada);
-        printf("Partidas en no conectado: %d\n", jug*/
     }
 }
 
@@ -375,15 +355,12 @@ void mostrarMenuBienvenida() {
 
 // Función para inicializar una cuadrícula con agua (~)
 void inicializarCuadricula(Cuadricula* cuadricula) {
-
     /*for (int i = 0; i < FILAS; i++) {
         for (int j = 0; j < COLUMNAS; j++) {
             cuadricula->tablero[i][j] = (char*)malloc(sizeof(char));
             cuadricula->idBarco[i][j] = (int*)malloc(sizeof(int));
         }
     }*/
-    cuadricula = (Cuadricula *)malloc(sizeof(Cuadricula));
-
     for (int i = 0; i < FILAS; i++) {
         for (int j = 0; j < COLUMNAS; j++) {
             cuadricula->tablero[i][j] = '~';
@@ -439,14 +416,12 @@ int esEspacioDisponible(Cuadricula* cuadricula, int fila, int columna, int orien
 // Función para colocar un barco en una cuadricula
 void colocarBarco(Cuadricula* cuadricula, Barco* barco) {
     int fila, columna, orientacion;
-
     // Generar coordenadas aleatorias y orientación
     do {
         fila = rand() % FILAS;
         columna = rand() % COLUMNAS;
         orientacion = rand() % 2;
     } while (!esEspacioDisponible(cuadricula, fila, columna, orientacion, barco->tamano));
-
     // Colocar el barco
     if (orientacion == 0) {
         for (int i = 0; i < barco->tamano; i++) {
@@ -483,7 +458,7 @@ int disparar(Cuadricula* cuadricula_disparo, Cuadricula* cuadricula_barco, Barco
             return -1; // Indicar que las coordenadas no son válidas
         }
     } else {
-        printf("Coordenadas no válidas. Inténtalo de nuevo.lele\n");
+        printf("Coordenadas no válidas. Inténtalo de nuevo.\n");
         return -1; // Indicar que las coordenadas no son válidas
     }
 
@@ -499,33 +474,9 @@ int disparar(Cuadricula* cuadricula_disparo, Cuadricula* cuadricula_barco, Barco
         cuadricula_barco->tablero[fila][columna] = 'O';    // Barco golpeado
 
         // Reducir la salud del barco golpeado
-        
-        /*for(int j = 0; j < FILAS; j++){
-            for(int k = 0; k < COLUMNAS; k++){
-                for (int i = 0; i < 5; i++) {
-                    if(cuadricula_barco->tablero[j][k] == cuadricula_barco->tablero[fila][columna] && cuadricula_barco->idBarco[j][k]==barcos[i].idBarco){
-                        cuadricula_barco->idBarco[j][k]+=10;
-                        barcos[i].salud--;
-                        printf("id:%d  salud:%d\n",barcos[i].idBarco,barcos[i].salud);
-                        if (barcos[i].salud == 0) {
-                            printf("¡Barco hundido! Coordenadas: %c%d\n", coordenadas[0], fila + 1);
-                            break;
-                        }
-                        break;
-                    }
-                }
-            }
-            
-            // if (barcos[i].simbolo == 'B') {
-            //     barcos[i].salud--;
-            //     if (barcos[i].salud == 0) {
-            //         printf("¡Barco hundido! Coordenadas: %c%d\n", coordenadas[0], fila + 1);
-            //     }
-            // }
-        }*/
-
         int posBarco=cuadricula_barco->idBarco[fila][columna];
         barcos[posBarco].salud--;
+
         //printf("id:%d  salud:%d\n",barcos[posBarco].idBarco,barcos[posBarco].salud);
         if (barcos[posBarco].salud == 0) 
         {
@@ -667,16 +618,17 @@ void stringBarcosToMatriz(char *cadena,Cuadricula *cuadricula)
             if(cadena[cont] == 'A')
             {
                 cuadricula->tablero[i][j] = '~';
+                cont++;
             }
             else if(cadena[cont] == 'B')
             {
                 cuadricula->tablero[i][j] = 'B';
+                cont++;
             }
-            else
+            else if(cadena[cont] == ';')
             {
-                //exit(1);
+                cont++;
             }
-            cont++;
         }
         // Ignora el punto y coma que separa las filas
         cont++;

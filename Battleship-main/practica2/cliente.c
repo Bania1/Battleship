@@ -62,9 +62,9 @@ int main()
 	FD_SET(0, &readfds);
 	FD_SET(sd, &readfds);
 
-	Cuadricula *tableroBarcos;
+	Cuadricula *tableroBarcos=(Cuadricula *)malloc(sizeof(Cuadricula));
 	inicializarCuadricula(tableroBarcos);
-
+	//struct partida partidas;
 	/* ------------------------------------------------------------------
 		Se transmite la información
 	-------------------------------------------------------------------*/
@@ -87,6 +87,7 @@ int main()
 
 			char * token = strtok(buffer_copia," ");
 			//char * token2 = strtok(buffer_copia2,";");
+			//printf("\n%s\n", buffer);
 
 			if (strcmp(buffer, "Demasiados clientes conectados\n") == 0)
 			{
@@ -98,15 +99,23 @@ int main()
 				printf("\n%s\n", buffer);
 				fin = 1;
 			}
-			else if (strcmp(token, "+Ok. Empezamos partida\n") == 0)
+			else if (strcmp(buffer, "+Ok. Empezamos partida\n") == 0)
 			{
-				printf("\n%s\n", buffer);
+				
+				//bzero(buffer, sizeof(buffer));
+				//printf("\n%s\n", buffer);
 				bzero(buffer, sizeof(buffer));
 				recv(sd, buffer, sizeof(buffer), 0);
 				printf("\n%s\n", buffer);
 
 				stringBarcosToMatriz(buffer,tableroBarcos);
 				imprimirCuadricula(tableroBarcos);
+				
+				//printf("\n%s\n", buffer);
+				//bzero(buffer, sizeof(buffer));
+				//recv(sd, buffer, sizeof(buffer), 0);
+				//stringBarcosToMatriz(buffer,&partidas.tableroBarcos1);
+				//imprimirCuadricula(&partidas.tableroBarcos1);
 			}
 			else if(strcmp(token,"+Ok.")==0)
 			{
@@ -149,6 +158,6 @@ int main()
 	} while (fin == 0);
 
 	close(sd);
-
+	free(tableroBarcos);
 	return 0;
 }
