@@ -251,7 +251,11 @@ int main()
 			{
 				printf("\n%s\n", buffer);
 			}
-			else if(strcmp(token,"-Err:")==0)
+			else if(strcmp(token,"-Err.")==0)
+			{
+				printf("\n%s\n", buffer);
+			}
+			else 
 			{
 				printf("\n%s\n", buffer);
 			}

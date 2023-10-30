@@ -18,7 +18,7 @@
  */
 
 void manejador(int signum);
-void salirCliente(int socket, fd_set *readfds, int *numClientes, int arrayClientes[]);
+void salirCliente(int socket, fd_set *readfds, int *numClientes, int arrayClientes[], struct partida *partidas);
 
 int main()
 {
@@ -197,7 +197,9 @@ int main()
                             // COMPRUEBO SI EL MENSAJE DEL CLIENTE ES SALIR
                             if (strcmp(buffer, "SALIR\n") == 0)
                             {
-                                salirCliente(i, &readfds, &numClientes, arrayClientes);
+
+                                salirCliente(i, &readfds, &numClientes, arrayClientes,partidas);
+
                             }
 
                             // Iniciar partida y buscarlas
@@ -212,14 +214,14 @@ int main()
                                 {
                                     // Le envío al jugador que no puede jugar
                                     bzero(buffer, sizeof(buffer));
-                                    sprintf(buffer, "-Err: Debes estas LOGUEADO para poder INICIAR-PARTIDA\n");
+                                    sprintf(buffer, "-Err. Debes estas LOGUEADO para poder INICIAR-PARTIDA\n");
                                     send(i, buffer, sizeof(buffer), 0);
                                 }
                                 else if (jugadores[pos].estado == ESPERANDO || jugadores[pos].estado == JUGANDO)
                                 {
                                     // Le envío al jugador que no puede jugar
                                     bzero(buffer, sizeof(buffer));
-                                    sprintf(buffer, "-Err: ya estás en una partida\n");
+                                    sprintf(buffer, "-Err. ya estás en una partida\n");
                                     send(i, buffer, sizeof(buffer), 0);
                                 }
 
@@ -349,7 +351,7 @@ int main()
                                     {
                                         // Le envío al jugador que no puede jugar
                                         bzero(buffer, sizeof(buffer));
-                                        sprintf(buffer, "-Err: No hay partidas disponibles\n");
+                                        sprintf(buffer, "-Err. No hay partidas disponibles\n");
                                         send(i, buffer, sizeof(buffer), 0);
                                     }
                                 }
@@ -391,14 +393,14 @@ int main()
                                             {
                                                 // Ya se ha disparado en la coordenada, vuelve a intentarlo
                                                 bzero(buffer, sizeof(buffer));
-                                                sprintf(buffer, "-Err: Ya has disparado en esa coordenada\n");
+                                                sprintf(buffer, "-Err. Ya has disparado en esa coordenada\n");
                                                 send(i, buffer, sizeof(buffer), 0);
                                             }
                                             else if (disparoValido == -1)
                                             {
                                                 // El disparo no es válido
                                                 bzero(buffer, sizeof(buffer));
-                                                sprintf(buffer, "-Err: Disparo no válido\n");
+                                                sprintf(buffer, "-Err. Disparo no válido\n");
                                                 send(i, buffer, sizeof(buffer), 0);
                                             }
                                             else
@@ -507,7 +509,7 @@ int main()
                                         else
                                         {
                                             bzero(buffer, sizeof(buffer));
-                                            sprintf(buffer, "-Err: No te encuentras en ninguna partida\n");
+                                            sprintf(buffer, "-Err. No te encuentras en ninguna partida\n");
                                             send(i, buffer, sizeof(buffer), 0);
                                         }
                                         // hay q mandar de vuelta las cadenas al cliente para que muestre las matrices
@@ -525,14 +527,14 @@ int main()
                                             {
                                                 // Ya se ha disparado en la coordenada, vuelve a intentarlo
                                                 bzero(buffer, sizeof(buffer));
-                                                sprintf(buffer, "-Err: Ya has disparado en esa coordenada\n");
+                                                sprintf(buffer, "-Err. Ya has disparado en esa coordenada\n");
                                                 send(i, buffer, sizeof(buffer), 0);
                                             }
                                             else if (disparoValido == -1)
                                             {
                                                 // El disparo no es válido
                                                 bzero(buffer, sizeof(buffer));
-                                                sprintf(buffer, "-Err: Disparo no válido\n");
+                                                sprintf(buffer, "-Err. Disparo no válido\n");
                                                 send(i, buffer, sizeof(buffer), 0);
                                             }
                                             else
@@ -641,21 +643,21 @@ int main()
                                         else
                                         {
                                             bzero(buffer, sizeof(buffer));
-                                            sprintf(buffer, "-Err: No te encuentras en ninguna partida\n");
+                                            sprintf(buffer, "-Err. No te encuentras en ninguna partida\n");
                                             send(i, buffer, sizeof(buffer), 0);
                                         }
                                     }
                                     else
                                     {
                                         bzero(buffer, sizeof(buffer));
-                                        sprintf(buffer, "-Err: No es tu turno\n");
+                                        sprintf(buffer, "-Err. No es tu turno\n");
                                         send(i, buffer, sizeof(buffer), 0);
                                     }
                                 }
                                 else
                                 {
                                     bzero(buffer, sizeof(buffer));
-                                    sprintf(buffer, "-Err: Formato del mensaje de disparo incorrecto\n");
+                                    sprintf(buffer, "-Err. Formato del mensaje de disparo incorrecto\n");
                                     send(i, buffer, sizeof(buffer), 0);
                                 }
                             }
@@ -675,7 +677,7 @@ int main()
                                     if (existe)
                                     {
                                         bzero(buffer, sizeof(buffer));
-                                        sprintf(buffer, "-Err: El usuario ya existe\n");
+                                        sprintf(buffer, "-Err. El usuario ya existe\n");
                                         send(i, buffer, sizeof(buffer), 0);
                                     }
                                     else
@@ -691,7 +693,7 @@ int main()
                                 else
                                 {
                                     bzero(buffer, sizeof(buffer));
-                                    sprintf(buffer, "-Err: Formato del mensaje de registro incorrecto\n");
+                                    sprintf(buffer, "-Err. Formato del mensaje de registro incorrecto\n");
                                     send(i, buffer, sizeof(buffer), 0);
                                 }
                             }
@@ -713,7 +715,7 @@ int main()
                                 if (existe && usuario_encontrado == true)
                                 {
                                     bzero(buffer, sizeof(buffer));
-                                    sprintf(buffer, "-Err: El usuario ya se encuentra logueado\n");
+                                    sprintf(buffer, "-Err. El usuario ya se encuentra logueado\n");
                                     send(i, buffer, sizeof(buffer), 0);
                                 }
                                 else if (existe && usuario_encontrado == false)
@@ -725,13 +727,13 @@ int main()
                                     strcpy(jugadores[pos].nombre_user, nombre);
 
                                     bzero(buffer, sizeof(buffer));
-                                    sprintf(buffer, "+Ok. Usuario correcto, introduce la contrasena\n");
+                                    sprintf(buffer, "+Ok. Usuario correcto\n");
                                     send(i, buffer, sizeof(buffer), 0);
                                 }
                                 else
                                 {
                                     bzero(buffer, sizeof(buffer));
-                                    sprintf(buffer, "-Err: El usuario no existe\n");
+                                    sprintf(buffer, "-Err. Usuario incorrecto\n");
                                     send(i, buffer, sizeof(buffer), 0);
                                 }
                                 bzero(buffer, sizeof(buffer));
@@ -750,7 +752,7 @@ int main()
                                 if (jugadores[pos].estado != USUARIO_ENCONTRADO)
                                 {
                                     bzero(buffer, sizeof(buffer));
-                                    sprintf(buffer, "-Err: Debes introducir el usuario antes de la contraseña\n");
+                                    sprintf(buffer, "-Err. Debes introducir el usuario antes de la contraseña\n");
                                     send(i, buffer, sizeof(buffer), 0);
                                 }
                                 else
@@ -763,13 +765,13 @@ int main()
                                         // cambia el estado del jugador a LOGUEADO
                                         jugadores[pos].estado = LOGUEADO; // pos por i
                                         bzero(buffer, sizeof(buffer));
-                                        sprintf(buffer, "+Ok. Usuario logueado correctamente\n");
+                                        sprintf(buffer, "+Ok. Usuario validado\n");
                                         send(i, buffer, sizeof(buffer), 0);
                                     }
                                     else
                                     {
                                         bzero(buffer, sizeof(buffer));
-                                        sprintf(buffer, "-Err: Contraseña incorrecta\n");
+                                        sprintf(buffer, "-Err. Error en la validación\n");
                                         send(i, buffer, sizeof(buffer), 0);
                                     }
                                 }
@@ -777,13 +779,10 @@ int main()
                             }
                             else
                             {
-                                // sprintf(identificador, "<%d>: %s", i, buffer);
-                                // bzero(buffer, sizeof(buffer));
-                                // strcpy(buffer, identificador);
-                                // printf("%s\n", buffer);
-                                // for (j = 0; j < numClientes; j++)
-                                //     if (arrayClientes[j] != i)
-                                //         send(arrayClientes[j], buffer, sizeof(buffer), 0);
+                                // Mensajes no valido
+                                bzero(buffer, sizeof(buffer));bzero(buffer, sizeof(buffer));
+                                sprintf(buffer, "-Err. Mensaje incorrecto\n");
+                                send(i, buffer, sizeof(buffer), 0);
                             }
                         }
                         // Si el cliente introdujo ctrl+c
@@ -791,7 +790,7 @@ int main()
                         {
                             printf("El socket %d, ha introducido ctrl+c\n", i);
                             // Eliminar ese socket
-                            salirCliente(i, &readfds, &numClientes, arrayClientes);
+                            salirCliente(i, &readfds, &numClientes, arrayClientes, partidas);
                         }
                     }
                 }
@@ -803,7 +802,7 @@ int main()
     return 0;
 }
 
-void salirCliente(int socket, fd_set *readfds, int *numClientes, int arrayClientes[])
+void salirCliente(int socket, fd_set *readfds, int *numClientes, int arrayClientes[], struct partida *partidas)
 {
 
     char buffer[250];
@@ -821,6 +820,22 @@ void salirCliente(int socket, fd_set *readfds, int *numClientes, int arrayClient
 
     (*numClientes)--;
 
+    for(int i = 0; i < MAX_MATCHES; i++)
+    {
+        if(partidas[i].socket1 == socket)
+        {
+            bzero(buffer, sizeof(buffer));
+            sprintf(buffer, "+Ok. Tu oponente ha terminado la partida");
+            send(partidas[i].socket2, buffer, sizeof(buffer), 0);
+        }
+        else if(partidas[i].socket2==socket)
+        {
+            bzero(buffer, sizeof(buffer));
+            sprintf(buffer, "+Ok. Tu oponente ha terminado la partida");
+            send(partidas[i].socket1, buffer, sizeof(buffer), 0);
+        }
+    }
+    
     bzero(buffer, sizeof(buffer));
     sprintf(buffer, "Desconexión del cliente <%d>", socket);
 
@@ -835,13 +850,7 @@ void manejador(int signum)
     signal(SIGINT, manejador);
 
     // Implementar lo que se desee realizar cuando ocurra la excepción de ctrl+c en el servidor
-}
 
-// un if que es para el caso de registrar un usuario
-//  else if (strncmp(buffer, "REGISTRO",8) == 0)
-//  {
-//      char usuario[20];
-//      char password[20];
-//      //Regitro -u juan -p 1234
-//      sscanf(buffer, "REGISTRO -u %s -p %s", usuario, password)
-//  }
+    // Eliminar proceso
+    exit(-1);
+}
