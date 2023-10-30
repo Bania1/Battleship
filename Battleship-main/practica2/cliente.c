@@ -149,16 +149,20 @@ int main()
 						} 
 					}
 				}				
-				bzero(buffer, sizeof(buffer));
-				recv(sd, buffer, sizeof(buffer), 0);
+				//bzero(buffer, sizeof(buffer));
+				//recv(sd, buffer, sizeof(buffer), 0);
 
 				printf("Tu tablero de barcos:\n");
-				stringBarcosToMatriz(buffer,tableroBarcos);
+				//stringBarcosToMatriz(buffer,tableroBarcos);
 				imprimirCuadricula(tableroBarcos);
 
 				printf("\nTu tablero de disparos:\n");
 				tableroDisparos->tablero[fila][columna]='F';
 				imprimirCuadricula(tableroDisparos);
+
+				bzero(buffer, sizeof(buffer));
+				recv(sd, buffer, sizeof(buffer), 0);
+				printf("\n%s\n", buffer);
 
 			}
 			else if (strncmp(buffer, "+Ok. Tocado:",12) == 0)
@@ -186,17 +190,20 @@ int main()
 						} 
 					}
 				}				
-				bzero(buffer, sizeof(buffer));
-				recv(sd, buffer, sizeof(buffer), 0);
+				//bzero(buffer, sizeof(buffer));
+				//recv(sd, buffer, sizeof(buffer), 0);
 
 				printf("Tu tablero de barcos:\n");
-				stringBarcosToMatriz(buffer,tableroBarcos);
+				//stringBarcosToMatriz(buffer,tableroBarcos);
 				imprimirCuadricula(tableroBarcos);
 
 				printf("\nTu tablero de disparos:\n");
 				tableroDisparos->tablero[fila][columna]='X';
 				imprimirCuadricula(tableroDisparos);
 
+				bzero(buffer, sizeof(buffer));
+				recv(sd, buffer, sizeof(buffer), 0);
+				printf("\n%s\n", buffer);
 
 			}
 			else if (strncmp(buffer, "+Ok. Hundido:\n",13) == 0)
@@ -224,16 +231,29 @@ int main()
 						} 
 					}
 				}				
-				bzero(buffer, sizeof(buffer));
-				recv(sd, buffer, sizeof(buffer), 0);
+				//bzero(buffer, sizeof(buffer));
+				//recv(sd, buffer, sizeof(buffer), 0);
 
 				printf("Tu tablero de barcos:\n");
-				stringBarcosToMatriz(buffer,tableroBarcos);
+				//stringBarcosToMatriz(buffer,tableroBarcos);
 				imprimirCuadricula(tableroBarcos);
 
 				printf("\nTu tablero de disparos:\n");
 				tableroDisparos->tablero[fila][columna]='X';
 				imprimirCuadricula(tableroDisparos);
+
+
+				bzero(buffer, sizeof(buffer));
+				recv(sd, buffer, sizeof(buffer), 0);
+				if(strcmp(buffer,"+Ok. Has ganado\n")==0 || strcmp(buffer,"+Ok. Has perdido\n")==0)
+				{
+					printf("\n%s\n", buffer);
+					fin=1;
+				}
+				else
+				{
+					printf("\n%s\n", buffer);
+				}
 			}
 			else if(strcmp(token,"+Ok.") ==0)
 			{

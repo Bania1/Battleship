@@ -374,10 +374,10 @@ int main()
                                     int pos1 = buscarSocket(jugadores, MAX_CLIENTS, partidas[idPartida].socket1);
                                     int pos2 = buscarSocket(jugadores, MAX_CLIENTS, partidas[idPartida].socket2);
 
-                                    printf("pos1: %d\n", pos1);
-                                    printf("pos2: %d\n", pos2);
+                                    //printf("pos1: %d\n", pos1);
+                                    //printf("pos2: %d\n", pos2);
 
-                                    imprimirPartidas(partidas, MAX_MATCHES);
+                                    //imprimirPartidas(partidas, MAX_MATCHES);
 
                                     // Turno de jugador 1
                                     if (partidas[idPartida].turno == 1 && partidas[idPartida].turno2 == 0 && partidas[idPartida].socket1 == i)
@@ -445,18 +445,57 @@ int main()
                                                     bzero(buffer, sizeof(buffer));
                                                     sprintf(buffer, "+Ok. Te han disparado: %s\n", disparo);
                                                     send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
+
+                                                    bzero(buffer, sizeof(buffer));
+                                                    sprintf(buffer, "+Ok. Es tu turno\n");
+                                                    send(partidas[idPartida].socket1, buffer, sizeof(buffer), 0);
+
+                                                    bzero(buffer, sizeof(buffer));
+                                                    sprintf(buffer, "+Ok. Es turno del contrincante\n");
+                                                    send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
                                                 }
                                                 else if (tocado == 2) // Hundido
                                                 {
                                                     // Ha tocado a un barco
                                                     bzero(buffer, sizeof(buffer));
                                                     sprintf(buffer, "+Ok. Hundido: %c,%d\n", col, fil);
-                                                    send(i, buffer, sizeof(buffer), 0);
+                                                    send(partidas[idPartida].socket1, buffer, sizeof(buffer), 0);
 
                                                     // Le envío al jugador 2 que le han disparado
                                                     bzero(buffer, sizeof(buffer));
                                                     sprintf(buffer, "+Ok. Te han disparado en: %s\n", disparo);
                                                     send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
+
+                                                    if(comprobarGanador(&partidas[idPartida].tableroBarcos2,barcos1)){
+                                                        // Le envío al jugador 1 que ha ganado
+                                                        bzero(buffer, sizeof(buffer));
+                                                        sprintf(buffer, "+Ok. Has ganado\n");
+                                                        send(partidas[idPartida].socket1, buffer, sizeof(buffer), 0);
+
+                                                        // Le envío al jugador 2 que ha perdido
+                                                        bzero(buffer, sizeof(buffer));
+                                                        sprintf(buffer, "+Ok. Has perdido\n");
+                                                        send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
+
+                                                        // Actualizo el estado de los jugadores
+                                                        jugadores[pos1].estado = CONECTADO;
+                                                        jugadores[pos2].estado = CONECTADO;
+
+                                                        // Actualizo el estado de la partida
+                                                        partidas[idPartida].socket1 = -1;
+                                                        partidas[idPartida].socket2 = -1;
+                                                        partidas[idPartida].estado = VACIA;
+                                                    }
+                                                    else
+                                                    {
+                                                        bzero(buffer, sizeof(buffer));
+                                                        sprintf(buffer, "+Ok. Es tu turno\n");
+                                                        send(partidas[idPartida].socket1, buffer, sizeof(buffer), 0);
+
+                                                        bzero(buffer, sizeof(buffer));
+                                                        sprintf(buffer, "+Ok. Es turno del contrincante\n");
+                                                        send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
+                                                    }
                                                 }
                                             }
                                         }
@@ -534,6 +573,15 @@ int main()
                                                     bzero(buffer, sizeof(buffer));
                                                     sprintf(buffer, "+Ok. Te han disparado %s\n", disparo);
                                                     send(partidas[idPartida].socket1, buffer, sizeof(buffer), 0);
+
+                                                    bzero(buffer, sizeof(buffer));
+                                                    sprintf(buffer, "+Ok. Es tu turno\n");
+                                                    send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
+
+                                                    // Le envío al jugador 1 que cambia el turno
+                                                    bzero(buffer, sizeof(buffer));
+                                                    sprintf(buffer, "+Ok. Es turno del contrincante\n");
+                                                    send(partidas[idPartida].socket1, buffer, sizeof(buffer), 0);
                                                 }
                                                 else if (tocado == 2) // Hundido
                                                 {
@@ -546,6 +594,38 @@ int main()
                                                     bzero(buffer, sizeof(buffer));
                                                     sprintf(buffer, "+Ok. Te han disparado en: %s\n", disparo);
                                                     send(partidas[idPartida].socket1, buffer, sizeof(buffer), 0);
+
+                                                    if(comprobarGanador(&partidas[idPartida].tableroBarcos1,barcos2)){
+                                                        // Le envío al jugador 1 que ha ganado
+                                                        bzero(buffer, sizeof(buffer));
+                                                        sprintf(buffer, "+Ok. Has ganado\n");
+                                                        send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
+
+                                                        // Le envío al jugador 2 que ha perdido
+                                                        bzero(buffer, sizeof(buffer));
+                                                        sprintf(buffer, "+Ok. Has perdido\n");
+                                                        send(partidas[idPartida].socket1, buffer, sizeof(buffer), 0);
+
+                                                        // Actualizo el estado de los jugadores
+                                                        jugadores[pos1].estado = CONECTADO;
+                                                        jugadores[pos2].estado = CONECTADO;
+
+                                                        // Actualizo el estado de la partida:) MIRA WAEPERA Q ESTOY PROBANDOQUE ME TENGO QUE IR
+                                                        //HAGO COMMIT
+                                                        partidas[idPartida].socket1 = -1;
+                                                        partidas[idPartida].socket2 = -1;
+                                                        partidas[idPartida].estado = VACIA;
+                                                    }
+                                                    else
+                                                    {
+                                                        bzero(buffer, sizeof(buffer));
+                                                        sprintf(buffer, "+Ok. Es tu turno\n");
+                                                        send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
+
+                                                        bzero(buffer, sizeof(buffer));
+                                                        sprintf(buffer, "+Ok. Es turno del contrincante\n");
+                                                        send(partidas[idPartida].socket1, buffer, sizeof(buffer), 0);
+                                                    }
                                                 }
                                             }
                                         }
