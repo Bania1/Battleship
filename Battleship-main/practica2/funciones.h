@@ -141,6 +141,18 @@ char* matrizDisparosToString(Cuadricula* cuadricula);
 void stringBarcosToMatriz(char *cadena,Cuadricula *cuadricula);
 
 void stringDisparosToMatriz(char *cadena,Cuadricula *cuadricula);
+
+// Funcion disparar
+// return 0 disparo fallido
+// return 1 disparo acertado
+// return 2 barco hundido
+int disparar(Cuadricula* cuadricula_disparo, Cuadricula* cuadricula_barco, Barco barcos[], char* coordenadas);
+
+//Funcion que comprueba si el disparo es valido
+//return -1 si no es valido
+//return 0 si ya se ha disparado ahi
+//return 1 si es valido
+int validarDisparo(Cuadricula* cuadricula_disparo, char* coordenadas);
 // void rellenar_datos_partidas(struct partida * partidas, struct jugador * jugadores, int pos1, int pos2, int num_partida);
 
 //-------------Funciones de servidor----------------
@@ -156,8 +168,6 @@ int buscarSocketDisponible(struct jugador *jugadores, int tam, int pos);
 void imprimirJugadores(struct jugador *jugadores, int tam);
 
 void mostrarMenuBienvenida();
-
-int disparar(Cuadricula* cuadricula_disparo, Cuadricula* cuadricula_barco, Barco barcos[], char* coordenadas);
 
 void mostrarEstadisticas(EstadisticasJugador jugador1, EstadisticasJugador jugador2);
 

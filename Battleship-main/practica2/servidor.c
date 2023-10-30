@@ -383,76 +383,161 @@ int main()
                                     {
                                         // Busco la partida
                                         int idPartida = buscarIDPartida(partidas, MAX_MATCHES, i);
-
-                                        // Compruebo el turno
+                                        
+                                        // Turno de jugador 1
                                         if (partidas[idPartida].turno == 1)
                                         {
-                                            //Dispara el jugador 1
-                                            partidas[idPartida].disparos1 = disparar(&partidas[idPartida].tableroDisparos1,   // tablero de disparos del jugador 1
-                                                                   &partidas[idPartida].tableroBarcos2,     // tablero de barcos del jugador 2
-                                                                   barcos2,                                  // barcos del jugador 2
-                                                                   disparo);                                // disparo del jugador 1
-
-                                            // Compruebo si el disparo ha sido agua o barco
-                                            if (partidas[idPartida].disparos1 == 0)
+                                            // Compruebo si el disparo es válido
+                                            int disparoValido = validarDisparo(&partidas[idPartida].tableroDisparos1, disparo);
+                                            
+                                            if(disparoValido == 0)
                                             {
-                                                // Le envío al jugador 1 que ha sido agua
+                                                // Ya se ha disparado en la coordenada, vuelve a intentarlo
                                                 bzero(buffer, sizeof(buffer));
-                                                sprintf(buffer, "+Ok. Agua en %s\n", disparo);
+                                                sprintf(buffer, "-Err: Ya has disparado en esa coordenada\n");
                                                 send(i, buffer, sizeof(buffer), 0);
-
-                                                // Le envío al jugador 2 que ha sido agua
-                                                bzero(buffer, sizeof(buffer));
-                                                sprintf(buffer, "+Ok. Agua en %s\n", disparo);
-                                                send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
-
-                                                // Le envío al jugador 1 que es el turno del contrincante
-                                                bzero(buffer, sizeof(buffer));
-                                                sprintf(buffer, "+Ok. es turno del contrincante\n");
-                                                send(i, buffer, sizeof(buffer), 0);
-
-                                                // Le envío al jugador 2 que es su turno
-                                                bzero(buffer, sizeof(buffer));
-                                                sprintf(buffer, "+Ok. es tu turno\n");
-                                                send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
-
-                                                // Cambio el turno
-                                                partidas[idPartida].turno = 2;
                                             }
-                                            else if (partidas[idPartida].disparos1 == 1)
+                                            else if(disparoValido == -1)
                                             {
-                                                // Le envío al jugador 1 que ha sido tocado
+                                                // El disparo no es válido
                                                 bzero(buffer, sizeof(buffer));
-                                                sprintf(buffer, "+Ok. Barco tocado en %s\n", disparo);
+                                                sprintf(buffer, "-Err: Disparo no válido\n");
                                                 send(i, buffer, sizeof(buffer), 0);
-
-                                                // Le envío al jugador 2 que ha sido tocado
-                                                bzero(buffer, sizeof(buffer));
-                                                sprintf(buffer, "+Ok. Barco tocado en %s\n", disparo);
-                                                send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
-
-                                                // Le envío al jugador 1 que es el turno del contrincante
-                                                bzero(buffer, sizeof(buffer));
-                                                sprintf(buffer, "+Ok. es turno del contrincante\n");
-                                                send(i, buffer, sizeof(buffer), 0);
-
-                                                // Le envío al jugador 2 que es su turno
-                                                bzero(buffer, sizeof(buffer));
-                                                sprintf(buffer, "+Ok. es tu turno\n");
-                                                send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
-
-                                                // Sigue el turno del jugador 1
                                             }
-                                            //else if (partidas[idPartida
+                                            else
+                                            {
+                                                // El disparo es válido
+                                                // Compruebo si ha tocado a algún barco
+                                                int tocado = disparar(&partidas[idPartida].tableroDisparos1, &partidas[idPartida].tableroBarcos2, barcos2, disparo);
+                                                
+                                                if(tocado == 0) // Agua
+                                                {
+                                                    // No ha tocado a ningún barco
+                                                    bzero(buffer, sizeof(buffer));
+                                                    sprintf(buffer, "+Ok: Agua: %s\n", disparo);
+                                                    send(i, buffer, sizeof(buffer), 0);
+                                                    
+                                                    // Le envío al jugador 2 que le han disparado
+                                                    bzero(buffer, sizeof(buffer));
+                                                    sprintf(buffer, "+Ok: Te han disparado en: %s\n", disparo);
+                                                    send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
+                                                    
+                                                    // Le envío al jugador 2 que le han disparado
+                                                    bzero(buffer, sizeof(buffer));
+                                                    sprintf(buffer, "+Ok: Es tu turno\n");
+                                                    send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
+                                                    
+                                                    // Le envío al jugador 1 que cambia el turno
+                                                    bzero(buffer, sizeof(buffer));
+                                                    sprintf(buffer, "+Ok: Es turno del contrincante\n");
+                                                    send(partidas[idPartida].socket1, buffer, sizeof(buffer), 0);
+                                                    
+                                                    // Cambio el turno
+                                                    partidas[idPartida].turno = 2;
+                                                }
+                                                else if(tocado == 1) // Tocado
+                                                {
+                                                    // Ha tocado a un barco
+                                                    bzero(buffer, sizeof(buffer));
+                                                    sprintf(buffer, "+Ok: Tocado: %s\n", disparo);
+                                                    send(i, buffer, sizeof(buffer), 0);
+                                                    
+                                                    // Le envío al jugador 2 que le han disparado
+                                                    bzero(buffer, sizeof(buffer));
+                                                    sprintf(buffer, "+Ok: Te han disparado\n");
+                                                    send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
+                                                }
+                                                else if(tocado == 2) // Hundido
+                                                {
+                                                    // Ha tocado a un barco
+                                                    bzero(buffer, sizeof(buffer));
+                                                    sprintf(buffer, "+Ok: Hundido: %s\n", disparo);
+                                                    send(i, buffer, sizeof(buffer), 0);
+                                                    
+                                                    // Le envío al jugador 2 que le han disparado
+                                                    bzero(buffer, sizeof(buffer));
+                                                    sprintf(buffer, "+Ok: Te han disparado en: %s\n", disparo);
+                                                    send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
+                                                }
+                                            }
                                         }
-                                        else if (1)    
-                                        {
-                                            // Aquí va toda la funcionalidad del disparo. Sería coger
-                                            // de vuestro tablero.c y adaptarlo al juego tal y como he hecho
-                                            // en la parte de iniciar partida
-                                            
 
+                                        // Turno de jugador 2
+                                        else if (partidas[idPartida].turno == 2)    
+                                        {
+                                            // Compruebo si el disparo es válido
+                                            int disparoValido = validarDisparo(&partidas[idPartida].tableroDisparos1, disparo);
                                             
+                                            if(disparoValido == 0)
+                                            {
+                                                // Ya se ha disparado en la coordenada, vuelve a intentarlo
+                                                bzero(buffer, sizeof(buffer));
+                                                sprintf(buffer, "-Err: Ya has disparado en esa coordenada\n");
+                                                send(i, buffer, sizeof(buffer), 0);
+                                            }
+                                            else if(disparoValido == -1)
+                                            {
+                                                // El disparo no es válido
+                                                bzero(buffer, sizeof(buffer));
+                                                sprintf(buffer, "-Err: Disparo no válido\n");
+                                                send(i, buffer, sizeof(buffer), 0);
+                                            }
+                                            else
+                                            {
+                                                // El disparo es válido
+                                                // Compruebo si ha tocado a algún barco
+                                                int tocado = disparar(&partidas[idPartida].tableroDisparos1, &partidas[idPartida].tableroBarcos2, barcos2, disparo);
+                                                
+                                                if(tocado == 0) // Agua
+                                                {
+                                                    // No ha tocado a ningún barco
+                                                    bzero(buffer, sizeof(buffer));
+                                                    sprintf(buffer, "+Ok: Agua: %s\n", disparo);
+                                                    send(i, buffer, sizeof(buffer), 0);
+                                                    
+                                                    // Le envío al jugador 1 que le han disparado
+                                                    bzero(buffer, sizeof(buffer));
+                                                    sprintf(buffer, "+Ok: Te han disparado en: %s\n", disparo);
+                                                    send(partidas[idPartida].socket1, buffer, sizeof(buffer), 0);
+                                                    
+                                                    // Le envío al jugador 1 que le han disparado
+                                                    bzero(buffer, sizeof(buffer));
+                                                    sprintf(buffer, "+Ok: Es tu turno\n");
+                                                    send(partidas[idPartida].socket1, buffer, sizeof(buffer), 0);
+                                                    
+                                                    // Le envío al jugador 2 que cambia el turno
+                                                    bzero(buffer, sizeof(buffer));
+                                                    sprintf(buffer, "+Ok: Es turno del contrincante\n");
+                                                    send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
+                                                    
+                                                    // Cambio el turno
+                                                    partidas[idPartida].turno = 1;
+                                                }
+                                                else if(tocado == 1) // Tocado
+                                                {
+                                                    // Ha tocado a un barco
+                                                    bzero(buffer, sizeof(buffer));
+                                                    sprintf(buffer, "+Ok: Tocado: %s\n", disparo);
+                                                    send(i, buffer, sizeof(buffer), 0);
+                                                    
+                                                    // Le envío al jugador 1 que le han disparado
+                                                    bzero(buffer, sizeof(buffer));
+                                                    sprintf(buffer, "+Ok: Te han disparado\n");
+                                                    send(partidas[idPartida].socket1, buffer, sizeof(buffer), 0);
+                                                }
+                                                else if(tocado == 2) // Hundido
+                                                {
+                                                    // Ha tocado a un barco
+                                                    bzero(buffer, sizeof(buffer));
+                                                    sprintf(buffer, "+Ok: Hundido: %s\n", disparo);
+                                                    send(i, buffer, sizeof(buffer), 0);
+                                                    
+                                                    // Le envío al jugador 1 que le han disparado
+                                                    bzero(buffer, sizeof(buffer));
+                                                    sprintf(buffer, "+Ok: Te han disparado en: %s\n", disparo);
+                                                    send(partidas[idPartida].socket1, buffer, sizeof(buffer), 0);
+                                                }
+                                            }
                                         }
                                         else
                                         {

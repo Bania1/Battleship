@@ -444,34 +444,10 @@ void colocarBarco(Cuadricula* cuadricula, Barco* barco) {
 int disparar(Cuadricula* cuadricula_disparo, Cuadricula* cuadricula_barco, Barco barcos[], char* coordenadas) {
     int fila, columna;
 
-    if (strlen(coordenadas) == 2 || (strlen(coordenadas) == 3 && coordenadas[2] == '0')) {
-        if (coordenadas[0] >= 'A' && coordenadas[0] <= 'J') {
-            if (coordenadas[1] >= '1' && ((coordenadas[2] == '\0') || (coordenadas[1] == '1' && coordenadas[2] == '0'))) {
-                fila = (coordenadas[1] == '1' && coordenadas[2] == '0') ? 9 : coordenadas[1] - '1';
-                columna = coordenadas[0] - 'A';
-            } else {
-                printf("Coordenadas no válidas. Inténtalo de nuevo.\n");
-                return -1; // Indicar que las coordenadas no son válidas
-            }
-        } else {
-            printf("Coordenadas no válidas. Inténtalo de nuevo.\n");
-            return -1; // Indicar que las coordenadas no son válidas
-        }
-    } else {
-        printf("Coordenadas no válidas. Inténtalo de nuevo.\n");
-        return -1; // Indicar que las coordenadas no son válidas
-    }
-
-    if (cuadricula_disparo->tablero[fila][columna] == 'X' ||
-        cuadricula_disparo->tablero[fila][columna] == 'F' ||
-        cuadricula_disparo->tablero[fila][columna] == 'O') {
-        printf("Ya has disparado en esas coordenadas. Inténtalo de nuevo.\n");
-        return -1; // Ya se disparó en esta ubicación
-    }
-
-    if (cuadricula_barco->tablero[fila][columna] == 'B') {
-        cuadricula_disparo->tablero[fila][columna] = 'X'; // Disparo acertado
-        cuadricula_barco->tablero[fila][columna] = 'O';    // Barco golpeado
+    if (cuadricula_barco->tablero[fila][columna] == 'B') 
+    {
+        cuadricula_disparo->tablero[fila][columna] = 'X'; // Disparo acertado y actualiza la cuadricula de disparos
+        cuadricula_barco->tablero[fila][columna] = 'O';    // Barco golpeado y actualiza la cuadricula de barcos
 
         // Reducir la salud del barco golpeado
         int posBarco=cuadricula_barco->idBarco[fila][columna];
@@ -480,13 +456,59 @@ int disparar(Cuadricula* cuadricula_disparo, Cuadricula* cuadricula_barco, Barco
         //printf("id:%d  salud:%d\n",barcos[posBarco].idBarco,barcos[posBarco].salud);
         if (barcos[posBarco].salud == 0) 
         {
-            printf("¡Barco hundido! Coordenadas: %c%d\n", coordenadas[0], fila + 1);
+            //printf("¡Barco hundido! Coordenadas: %c%d\n", coordenadas[0], fila + 1);
+            return 2; // Barco hundido
         }
-        return 1;
-    } else {
-        cuadricula_disparo->tablero[fila][columna] = 'F'; // Disparo fallido
-        return 0;
+
+        return 1; // Barco golpeado
+    } 
+    else 
+    {
+        cuadricula_disparo->tablero[fila][columna] = 'F'; // Disparo fallido y actualiza la cuadricula de disparos
+        return 0; // Disparo fallido
     }
+}
+
+int validarDisparo(Cuadricula* cuadricula_disparo, char* coordenadas) 
+{
+    int fila, columna;
+
+    if (strlen(coordenadas) == 2 || (strlen(coordenadas) == 3 && coordenadas[2] == '0')) 
+    {
+        if (coordenadas[0] >= 'A' && coordenadas[0] <= 'J') 
+        {
+            if (coordenadas[1] >= '1' && ((coordenadas[2] == '\0') || (coordenadas[1] == '1' && coordenadas[2] == '0'))) 
+            {
+                fila = (coordenadas[1] == '1' && coordenadas[2] == '0') ? 9 : coordenadas[1] - '1';
+                columna = coordenadas[0] - 'A';
+            } 
+            else 
+            {
+                //printf("Coordenadas no válidas. Inténtalo de nuevo.\n");
+                return -1; // Indicar que las coordenadas no son válidas
+            }
+        } 
+        else 
+        {
+            //printf("Coordenadas no válidas. Inténtalo de nuevo.\n");
+            return -1; // Indicar que las coordenadas no son válidas
+        }
+    } 
+    else 
+    {
+        //printf("Coordenadas no válidas. Inténtalo de nuevo.\n");
+        return -1; // Indicar que las coordenadas no son válidas
+    }
+
+    if (cuadricula_disparo->tablero[fila][columna] == 'X' ||
+        cuadricula_disparo->tablero[fila][columna] == 'F' ||
+        cuadricula_disparo->tablero[fila][columna] == 'O') 
+    {
+        //printf("Ya has disparado en esas coordenadas. Inténtalo de nuevo.\n");
+        return 0; // Ya se disparó en esta ubicación
+    }
+
+    return 1;
 }
 
 // Función para mostrar las estadísticas de los jugadores
