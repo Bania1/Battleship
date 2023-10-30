@@ -64,7 +64,10 @@ int main()
 
 	Cuadricula *tableroBarcos=(Cuadricula *)malloc(sizeof(Cuadricula));
 	inicializarCuadricula(tableroBarcos);
-	//struct partida partidas;
+
+	Cuadricula *tableroDisparos=(Cuadricula *)malloc(sizeof(Cuadricula));
+	inicializarCuadricula(tableroDisparos);
+	
 	/* ------------------------------------------------------------------
 		Se transmite la información
 	-------------------------------------------------------------------*/
@@ -108,8 +111,12 @@ int main()
 				recv(sd, buffer, sizeof(buffer), 0);
 				//printf("\n%s\n", buffer);
 
+				printf("Tu tablero de barcos:\n");
 				stringBarcosToMatriz(buffer,tableroBarcos);
 				imprimirCuadricula(tableroBarcos);
+
+				printf("\nTu tablero de disparos:\n");
+				imprimirCuadricula(tableroDisparos);
 				
 				//printf("\n%s\n", buffer);
 				//bzero(buffer, sizeof(buffer));
@@ -117,7 +124,118 @@ int main()
 				//stringBarcosToMatriz(buffer,&partidas.tableroBarcos1);
 				//imprimirCuadricula(&partidas.tableroBarcos1);
 			}
-			else if(strcmp(token,"+Ok.")==0)
+			else if (strncmp(buffer, "+Ok. Agua:", 10) == 0)
+			{
+				printf("\n%s\n", buffer);
+
+				char col;
+				int fil;
+
+				sscanf(buffer, "+Ok. Agua: %c,%d", &col, &fil);
+				//Concateno la columna y la fila
+				
+				int fila, columna;
+				char coordenadas[4];
+				sprintf(coordenadas, "%c%d", col, fil);
+
+				if (strlen(coordenadas) == 2 || (strlen(coordenadas) == 3 && coordenadas[2] == '0')) 
+				{
+					if (coordenadas[0] >= 'A' && coordenadas[0] <= 'J') 
+					{
+						if (coordenadas[1] >= '1' && ((coordenadas[2] == '\0') || (coordenadas[1] == '1' && coordenadas[2] == '0'))) 
+						{
+							fila = (coordenadas[1] == '1' && coordenadas[2] == '0') ? 9 : coordenadas[1] - '1';
+							columna = coordenadas[0] - 'A';
+						} 
+					}
+				}				
+				bzero(buffer, sizeof(buffer));
+				recv(sd, buffer, sizeof(buffer), 0);
+
+				printf("Tu tablero de barcos:\n");
+				stringBarcosToMatriz(buffer,tableroBarcos);
+				imprimirCuadricula(tableroBarcos);
+
+				printf("\nTu tablero de disparos:\n");
+				tableroDisparos->tablero[fila][columna]='F';
+				imprimirCuadricula(tableroDisparos);
+
+			}
+			else if (strncmp(buffer, "+Ok. Tocado:",12) == 0)
+			{
+				printf("\n%s\n", buffer);
+
+				char col;
+				int fil;
+
+				sscanf(buffer, "+Ok. Tocado: %c,%d", &col, &fil);
+				//Concateno la columna y la fila
+				
+				int fila, columna;
+				char coordenadas[4];
+				sprintf(coordenadas, "%c%d", col, fil);
+
+				if (strlen(coordenadas) == 2 || (strlen(coordenadas) == 3 && coordenadas[2] == '0')) 
+				{
+					if (coordenadas[0] >= 'A' && coordenadas[0] <= 'J') 
+					{
+						if (coordenadas[1] >= '1' && ((coordenadas[2] == '\0') || (coordenadas[1] == '1' && coordenadas[2] == '0'))) 
+						{
+							fila = (coordenadas[1] == '1' && coordenadas[2] == '0') ? 9 : coordenadas[1] - '1';
+							columna = coordenadas[0] - 'A';
+						} 
+					}
+				}				
+				bzero(buffer, sizeof(buffer));
+				recv(sd, buffer, sizeof(buffer), 0);
+
+				printf("Tu tablero de barcos:\n");
+				stringBarcosToMatriz(buffer,tableroBarcos);
+				imprimirCuadricula(tableroBarcos);
+
+				printf("\nTu tablero de disparos:\n");
+				tableroDisparos->tablero[fila][columna]='X';
+				imprimirCuadricula(tableroDisparos);
+
+
+			}
+			else if (strncmp(buffer, "+Ok. Hundido:\n",13) == 0)
+			{
+				printf("\n%s\n", buffer);
+
+				char col;
+				int fil;
+
+				sscanf(buffer, "+Ok. Tocado: %c,%d", &col, &fil);
+				//Concateno la columna y la fila
+				
+				int fila, columna;
+				char coordenadas[4];
+				sprintf(coordenadas, "%c%d", col, fil);
+
+				if (strlen(coordenadas) == 2 || (strlen(coordenadas) == 3 && coordenadas[2] == '0')) 
+				{
+					if (coordenadas[0] >= 'A' && coordenadas[0] <= 'J') 
+					{
+						if (coordenadas[1] >= '1' && ((coordenadas[2] == '\0') || (coordenadas[1] == '1' && coordenadas[2] == '0'))) 
+						{
+							fila = (coordenadas[1] == '1' && coordenadas[2] == '0') ? 9 : coordenadas[1] - '1';
+							columna = coordenadas[0] - 'A';
+						} 
+					}
+				}				
+				bzero(buffer, sizeof(buffer));
+				recv(sd, buffer, sizeof(buffer), 0);
+
+				printf("Tu tablero de barcos:\n");
+				stringBarcosToMatriz(buffer,tableroBarcos);
+				imprimirCuadricula(tableroBarcos);
+
+				printf("\nTu tablero de disparos:\n");
+				tableroDisparos->tablero[fila][columna]='X';
+				imprimirCuadricula(tableroDisparos);
+			}
+			else if(strcmp(token,"+Ok.") ==0)
 			{
 				printf("\n%s\n", buffer);
 			}

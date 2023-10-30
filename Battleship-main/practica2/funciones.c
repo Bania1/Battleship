@@ -446,6 +446,15 @@ void colocarBarco(Cuadricula* cuadricula, Barco* barco, int i) {
 int disparar(Cuadricula* cuadricula_disparo, Cuadricula* cuadricula_barco, Barco barcos[], char* coordenadas) {
     int fila, columna;
 
+    if (strlen(coordenadas) == 2 || (strlen(coordenadas) == 3 && coordenadas[2] == '0')) {
+        if (coordenadas[0] >= 'A' && coordenadas[0] <= 'J') {
+            if (coordenadas[1] >= '1' && ((coordenadas[2] == '\0') || (coordenadas[1] == '1' && coordenadas[2] == '0'))) {
+                fila = (coordenadas[1] == '1' && coordenadas[2] == '0') ? 9 : coordenadas[1] - '1';
+                columna = coordenadas[0] - 'A';
+            }
+        }
+    }
+
     if (cuadricula_barco->tablero[fila][columna] == 'B') 
     {
         cuadricula_disparo->tablero[fila][columna] = 'X'; // Disparo acertado y actualiza la cuadricula de disparos

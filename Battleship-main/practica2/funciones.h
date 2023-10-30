@@ -78,10 +78,11 @@ struct jugador
 
 struct partida
 {
-    int socket1; // socket del jugador 1
-    int socket2; // socket del jugador 2
+    int socket1;
+    int socket2; // socket del jugador 1
     int estado;
     int turno;
+    int turno2;
     int disparos1;
     int disparos2;
     Cuadricula tableroBarcos1;
