@@ -213,7 +213,7 @@ int main()
 				char col;
 				int fil;
 
-				sscanf(buffer, "+Ok. Tocado: %c,%d", &col, &fil);
+				sscanf(buffer, "+Ok. Hundido: %c,%d", &col, &fil);
 				//Concateno la columna y la fila
 				
 				int fila, columna;
@@ -242,18 +242,10 @@ int main()
 				tableroDisparos->tablero[fila][columna]='X';
 				imprimirCuadricula(tableroDisparos);
 
-
 				bzero(buffer, sizeof(buffer));
 				recv(sd, buffer, sizeof(buffer), 0);
-				if(strcmp(buffer,"+Ok. Has ganado\n")==0 || strcmp(buffer,"+Ok. Has perdido\n")==0)
-				{
-					printf("\n%s\n", buffer);
-					fin=1;
-				}
-				else
-				{
-					printf("\n%s\n", buffer);
-				}
+				printf("\n%s\n", buffer);
+				
 			}
 			else if(strcmp(token,"+Ok.") ==0)
 			{
