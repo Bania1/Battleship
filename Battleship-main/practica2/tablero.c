@@ -240,7 +240,7 @@ bool comprobarGanador(Cuadricula* cuadricula_barco,Barco barcos[]){
 char* matrizBarcosToString(Cuadricula* cuadricula)
 {
     //char cadena[1000] = "";
-    char *cadena = malloc(1000 * sizeof(char)); // Asigna memoria dinámica
+    char *cadena = malloc(250 * sizeof(char)); // Asigna memoria dinámica
     if (cadena == NULL) {
         // Manejo de error si malloc falla
         exit(1); // o devuelve NULL o haz lo que sea apropiado en tu aplicación

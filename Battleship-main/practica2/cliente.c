@@ -103,10 +103,10 @@ int main()
 			{
 				
 				//bzero(buffer, sizeof(buffer));
-				//printf("\n%s\n", buffer);
+				printf("\n%s\n", buffer);
 				bzero(buffer, sizeof(buffer));
 				recv(sd, buffer, sizeof(buffer), 0);
-				printf("\n%s\n", buffer);
+				//printf("\n%s\n", buffer);
 
 				stringBarcosToMatriz(buffer,tableroBarcos);
 				imprimirCuadricula(tableroBarcos);

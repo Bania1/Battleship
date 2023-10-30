@@ -293,16 +293,6 @@ int main()
                                         //Barco barcos1[] = {{4, 'B', 0, 0}, {3, 'B', 0, 1}, {3, 'B', 0, 2}, {2, 'B', 0, 3}, {2, 'B', 0, 4}};
                                         //Barco barcos2[] = {{4, 'B', 0, 0}, {3, 'B', 0, 1}, {3, 'B', 0, 2}, {2, 'B', 0, 3}, {2, 'B', 0, 4}};
 
-                                        for(int m=0;m<FILAS;m++)
-                                        {
-                                            for(int n=0;n<COLUMNAS;n++)
-                                            {
-                                                partidas[idPartida].tableroBarcos1.tablero[m][n] = " ";
-                                                partidas[idPartida].tableroBarcos2.tablero[m][n] = " ";
-
-                                            }
-                                        }
-
                                         inicializarCuadricula(&partidas[idPartida].tableroBarcos1);
                                         inicializarCuadricula(&partidas[idPartida].tableroBarcos2);
                                         // imprimirCuadricula(&partidas[idPartida].tableroBarcos1);
@@ -317,13 +307,13 @@ int main()
 
                                         for (int h = 0; h < 5; h++)
                                         {
-                                            colocarBarco(&partidas[idPartida].tableroBarcos1, &barcos1[h]);
-                                            colocarBarco(&partidas[idPartida].tableroBarcos2, &barcos2[h]);
+                                            colocarBarco(&partidas[idPartida].tableroBarcos1, &barcos1[h],0);
+                                            colocarBarco(&partidas[idPartida].tableroBarcos2, &barcos2[h],1);
                                         }
 
                                         // Funcion que convierta una matriz en cadena de caracteres
                                         //  A,A,A,A,B,B;A,A,A,B,B,B,B;
-                                        //bzero(buffer, sizeof(buffer));
+                                        bzero(buffer, sizeof(buffer));
                                         char *cadenaBarcos1 = matrizBarcosToString(&partidas[idPartida].tableroBarcos1);
                                         char *cadenaBarcos2 = matrizBarcosToString(&partidas[idPartida].tableroBarcos2);
                                         printf("cadena barcos 1: %s\n", cadenaBarcos1);
@@ -370,7 +360,7 @@ int main()
                             {
                                 char col;
                                 int fil;
-                                if (sscanf(buffer, "DISPARO %c,%d", &col, &fil) == 2)
+                                if (sscanf(buffer, "DISPARO %c%d", &col, &fil) == 2)
                                 {
                                     // Compruebo el estado del jugador que está disparando
                                     int pos = buscarSocket(jugadores, MAX_CLIENTS, i);
@@ -444,7 +434,7 @@ int main()
                                                     
                                                     // Le envío al jugador 2 que le han disparado
                                                     bzero(buffer, sizeof(buffer));
-                                                    sprintf(buffer, "+Ok: Te han disparado\n");
+                                                    sprintf(buffer, "+Ok: Te han disparado %s\n", disparo);
                                                     send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
                                                 }
                                                 else if(tocado == 2) // Hundido
@@ -460,6 +450,7 @@ int main()
                                                     send(partidas[idPartida].socket2, buffer, sizeof(buffer), 0);
                                                 }
                                             }
+                                            //hay q mandar de vuelta las cadenas al cliente para que muestre las matrices
                                         }
 
                                         // Turno de jugador 2
@@ -522,7 +513,7 @@ int main()
                                                     
                                                     // Le envío al jugador 1 que le han disparado
                                                     bzero(buffer, sizeof(buffer));
-                                                    sprintf(buffer, "+Ok: Te han disparado\n");
+                                                    sprintf(buffer, "+Ok: Te han disparado %s\n", disparo);
                                                     send(partidas[idPartida].socket1, buffer, sizeof(buffer), 0);
                                                 }
                                                 else if(tocado == 2) // Hundido

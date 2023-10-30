@@ -414,8 +414,10 @@ int esEspacioDisponible(Cuadricula* cuadricula, int fila, int columna, int orien
 }
 
 // Función para colocar un barco en una cuadricula
-void colocarBarco(Cuadricula* cuadricula, Barco* barco) {
+void colocarBarco(Cuadricula* cuadricula, Barco* barco, int i) {
     int fila, columna, orientacion;
+    srand(time(NULL)+i);
+    
     // Generar coordenadas aleatorias y orientación
     do {
         fila = rand() % FILAS;
@@ -556,14 +558,10 @@ bool comprobarGanador(Cuadricula* cuadricula_barco,Barco barcos[]){
 
 char* matrizBarcosToString(Cuadricula* cuadricula)
 {
-    //char cadena[1000] = "";
-    char *cadena = malloc(1000 * sizeof(char)); // Asigna memoria dinámica
-    if (cadena == NULL) {
-        // Manejo de error si malloc falla
-        exit(1); // o devuelve NULL o haz lo que sea apropiado en tu aplicación
-    }
-    int cont=0;
+    char *cadena = (char *)calloc(250, sizeof(char));
 
+    int cont=0;
+    
     for(int i=0;i<FILAS;i++)
     {
         for(int j=0;j<COLUMNAS;j++)

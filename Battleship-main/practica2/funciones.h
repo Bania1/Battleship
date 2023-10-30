@@ -124,7 +124,7 @@ void imprimirCuadricula(Cuadricula *cuadricula);
 
 int buscarIDPartida(struct partida * partidas, int tam, int socket_a_buscar);
 
-void colocarBarco(Cuadricula* cuadricula, Barco* barco);
+void colocarBarco(Cuadricula* cuadricula, Barco* barco,int i);
 
 int esEspacioDisponible(Cuadricula* cuadricula, int fila, int columna, int orientacion, int tamano);
 
